@@ -22,19 +22,20 @@ jobs:
           java-version: 17
       - name: Move Pom.xml to Root
         run: mv .github/workflows/pom.xml ./pom.xml
-      - name: Build and analyze
+      - name: Build
+        run: mvn -B verify
+      - name: Sonar analysis
+        if: ${{ secrets.SONAR_HOST_URL != '' && secrets.SONAR_TOKEN != '' }}
         env:
-          GITHUB_TOKEN: >-
-            5e0ed098-cfcf-49d7-8b5c-ac256e383778-10851575-18c2-446d-b62c-c43c19ebfe4d
-          SONAR_TOKEN: sqa_bca47d55147cb1b256a213a17c135dfe863be411
+          SONAR_TOKEN: '${{ secrets.SONAR_TOKEN }}'
           SONAR_HOST_URL: '${{ secrets.SONAR_HOST_URL }}'
         run: >-
-          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          mvn -B org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
           -Dsonar.projectKey=iamneo-production-2_5e0ed098-cfcf-49d7-8b5c-ac256e383778-10851575-18c2-446d-b62c-c43c19ebfe4d
-          -Dsonar.login=sqa_bca47d55147cb1b256a213a17c135dfe863be411
+          -Dsonar.login=$SONAR_TOKEN
           -Dsonar.host.url=$SONAR_HOST_URL
       - name: Trigger API
-        if: always()
+        if: ${{ always() && secrets.API_URL != '' && secrets.API_SECRET != '' }}
         env:
           API_URL: '${{ secrets.API_URL }}'
           API_SECRET: '${{ secrets.API_SECRET }}'
