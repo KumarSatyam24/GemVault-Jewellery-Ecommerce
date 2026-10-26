@@ -1,0 +1,160 @@
+<section class="page-top pb-3 pt-4">
+  <p class="eyebrow">Operations / bookings</p>
+  <h1 class="page-heading">Orders</h1>
+  <p class="page-intro">
+    Review reservations and update each piece. Cancelling requires a reason and
+    releases its stock.
+  </p>
+</section>
+<p class="error" *ngIf="error" role="alert">{{ error }}</p>
+<p class="success" *ngIf="message" role="status">{{ message }}</p>
+<div
+  class="order-toolbar flex flex-wrap items-center justify-between gap-4 border-y border-charcoal/20 py-4 text-xs text-muted dark:border-white/20"
+>
+  <div>
+    <strong>{{ orders.length }}</strong> total orders
+    <span class="toolbar-divider px-3 text-gold">/</span>
+    <strong>{{ pendingCount }}</strong> pending
+  </div>
+  <label class="flex items-center gap-3"
+    >Show
+    <app-dropdown
+      class="block w-[160px]"
+      [(ngModel)]="filter"
+      [options]="filterOptions"
+      label="Filter orders"
+    ></app-dropdown
+  ></label>
+</div>
+<p class="muted" *ngIf="loading">Loading orders…</p>
+<section
+  class="admin-order-list"
+  *ngIf="!loading && visibleOrders.length"
+  aria-label="Orders"
+>
+  <article
+    class="admin-order border-b border-charcoal/20 py-8 dark:border-white/20"
+    *ngFor="let order of visibleOrders"
+  >
+    <div
+      class="record-head flex items-start justify-between gap-5 max-[500px]:block"
+    >
+      <div>
+        <span class="eyebrow"
+          >Order #{{ order.orderId }}
+          <span *ngIf="order.checkoutId"
+            >/ Order #{{ order.orderId }}</span
+          ></span
+        >
+        <h2 class="mt-2 font-display text-[26px]">
+          {{ order.item?.itemName }}
+        </h2>
+      </div>
+      <span
+        class="status min-w-[92px] border border-gold px-3 py-2 text-center text-[11px] font-semibold uppercase tracking-widest max-[500px]:mt-4 max-[500px]:inline-block [&.status-pending]:text-[#76551f] [&.status-approved]:border-[#49745c] [&.status-approved]:text-[#28563e] [&.status-muted]:border-muted [&.status-muted]:text-muted"
+        [class.status-approved]="
+          order.status === 'Approved' || order.status === 'Delivered'
+        "
+        [class.status-pending]="order.status === 'Pending'"
+        [class.status-muted]="
+          order.status === 'Rejected' || order.status === 'Cancelled'
+        "
+        >{{ order.status }}</span
+      >
+    </div>
+    <div
+      class="record-details my-6 grid grid-cols-[minmax(110px,.9fr)_minmax(100px,.8fr)_minmax(85px,.55fr)_minmax(120px,.9fr)_minmax(220px,2fr)] gap-x-6 gap-y-4 border-y border-charcoal/10 py-4 max-[750px]:grid-cols-2 max-[750px]:[&>div:last-child]:col-span-2 dark:border-white/20 [&_span]:mb-2 [&_span]:block [&_span]:text-[10px] [&_span]:font-semibold [&_span]:uppercase [&_span]:tracking-widest [&_span]:text-muted [&_strong]:block [&_strong]:text-[13px] [&_strong]:font-medium [&_strong]:leading-6"
+    >
+      <div>
+        <span>Buyer</span><strong>{{ order.user?.username }}</strong>
+      </div>
+      <div>
+        <span>Placed</span><strong>{{ order.orderDate || "—" }}</strong>
+      </div>
+      <div>
+        <span>Quantity</span><strong>{{ order.quantity }}</strong>
+      </div>
+      <div>
+        <span>Total</span
+        ><strong>{{ order.totalPrice | currency: "INR" }}</strong>
+      </div>
+      <div>
+        <span>Delivery</span><strong>{{ order.deliveryAddress }}</strong>
+      </div>
+    </div>
+    <p
+      class="order-comment my-4 text-[13px] leading-6 text-muted"
+      *ngIf="order.comments"
+    >
+      <span
+        class="mb-1 block text-[10px] font-semibold uppercase tracking-widest"
+        >Buyer note</span
+      >{{ order.comments }}
+    </p>
+    <p
+      class="reason !mb-5 text-xs leading-6 text-muted"
+      *ngIf="order.cancellationReason"
+    >
+      Cancellation reason: {{ order.cancellationReason }}
+    </p>
+    <div
+      class="record-actions mt-4 flex flex-wrap gap-2 [&_button]:!min-h-9 [&_button]:!px-3 [&_button]:!py-2"
+    >
+      <button
+        type="button"
+        class="action-secondary"
+        (click)="setStatus(order, 'Approved')"
+        [disabled]="
+          order.status === 'Approved' ||
+          order.status === 'Cancelled' ||
+          order.status === 'Delivered'
+        "
+      >
+        Approve
+      </button>
+      <button
+        type="button"
+        class="action-secondary"
+        (click)="setStatus(order, 'Rejected')"
+        [disabled]="
+          order.status === 'Rejected' ||
+          order.status === 'Cancelled' ||
+          order.status === 'Delivered'
+        "
+      >
+        Reject
+      </button>
+      <button
+        type="button"
+        class="action-secondary"
+        (click)="setStatus(order, 'Delivered')"
+        [disabled]="
+          order.status === 'Delivered' ||
+          order.status === 'Cancelled' ||
+          order.status === 'Rejected'
+        "
+      >
+        Mark delivered
+      </button>
+    </div>
+    <div
+      class="cancel-row mt-5 flex items-end gap-4 border-t border-charcoal/10 pt-4 max-[500px]:block dark:border-white/20"
+      *ngIf="order.status === 'Pending' || order.status === 'Approved'"
+    >
+      <label class="w-full max-w-[390px]"
+        >Cancellation reason
+        <input
+          [ngModel]="cancelReasons[order.orderId!]"
+          (ngModelChange)="cancelReasons[order.orderId!] = $event"
+          maxlength="500"
+          placeholder="Required to cancel" /></label
+      ><button type="button" class="btn-danger" (click)="cancel(order)">
+        Cancel booking
+      </button>
+    </div>
+  </article>
+</section>
+<div class="empty-state" *ngIf="!loading && !visibleOrders.length && !error">
+  <h2>No orders found</h2>
+  <p class="muted">Try another status filter.</p>
+</div>

@@ -1,0 +1,45 @@
+<section class="pb-10 pt-4">
+  <p class="eyebrow">Your collection</p>
+  <h1 class="page-heading">Wishlist</h1>
+  <p class="page-intro">Keep the pieces you would like to revisit.</p>
+  <p class="error" *ngIf="error">{{ error }}</p>
+  <p class="muted" *ngIf="loading">Loading wishlist…</p>
+  <div
+    class="product-grid grid grid-cols-3 gap-6 max-[900px]:grid-cols-2 max-[520px]:grid-cols-1"
+    *ngIf="!loading && items.length"
+  >
+    <article *ngFor="let item of items">
+      <div class="relative">
+        <button
+          type="button"
+          class="block w-full overflow-hidden rounded-xl border-0 bg-taupe p-0"
+          (click)="view(item)"
+        >
+          <img
+            class="aspect-square w-full bg-[#ebe5de] object-cover"
+            [src]="item.imageUrl"
+            [alt]="item.itemName"
+          />
+        </button>
+        <button
+          type="button"
+          class="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border border-white/70 bg-[#1d1b19]/75 text-xl text-white backdrop-blur-sm transition hover:border-gold hover:text-gold"
+          (click)="remove(item)"
+          [attr.aria-label]="'Remove ' + item.itemName + ' from wishlist'"
+          title="Remove from wishlist"
+        >
+          ♥
+        </button>
+      </div>
+      <h2 class="mt-3 font-display text-2xl">{{ item.itemName }}</h2>
+      <p class="mt-1 text-sm">{{ item.totalPrice | currency: "INR" }}</p>
+      <button type="button" class="btn-quiet mt-2" (click)="view(item)">
+        View
+      </button>
+    </article>
+  </div>
+  <div class="empty-state" *ngIf="!loading && !items.length">
+    <h2>Your wishlist is empty</h2>
+    <a routerLink="/" class="btn mt-4 no-underline">Explore jewellery</a>
+  </div>
+</section>

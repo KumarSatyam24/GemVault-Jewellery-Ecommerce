@@ -1,0 +1,141 @@
+[
+    {
+      "id": 1,
+      "category": "Account",
+      "question": "How do I create a GemVault account?",
+      "answer": "Choose Create account, enter your name, email, mobile number and a strong password, then use the verification link emailed to you before signing in."
+    },
+    {
+      "id": 2,
+      "category": "Account",
+      "question": "Can I sign in with Google?",
+      "answer": "Yes. Choose Continue with Google on the sign-in or create-account page. A verified Google email can sign in to a buyer account. Administrators use password sign-in followed by email confirmation."
+    },
+    {
+      "id": 3,
+      "category": "Account",
+      "question": "How do I reset a forgotten password?",
+      "answer": "Choose Forgot your password? on the sign-in page and enter your account email. Open the reset link in the email, then choose a new password."
+    },
+    {
+      "id": 4,
+      "category": "Account",
+      "question": "Why have I not received my verification email?",
+      "answer": "Check spam and promotions, confirm the email address is correct, and use Resend verification email on the registration page. Contact the store if it still does not arrive."
+    },
+    {
+      "id": 5,
+      "category": "Account",
+      "question": "How do I change my saved addresses?",
+      "answer": "Sign in as a buyer and open Account. You can add, edit or remove saved delivery addresses there."
+    },
+    {
+      "id": 6,
+      "category": "Items",
+      "question": "How do I find jewellery by name or category?",
+      "answer": "Open Jewellery and use the search field or category filters to browse available pieces. Search terms can also inform your personal recommendations when signed in."
+    },
+    {
+      "id": 7,
+      "category": "Items",
+      "question": "How do I save a piece to my wishlist?",
+      "answer": "Sign in as a buyer and select Save or Wishlist on a product. Open My Wishlist from the navigation to revisit or remove saved pieces."
+    },
+    {
+      "id": 8,
+      "category": "Items",
+      "question": "How is the jewellery price calculated?",
+      "answer": "The item price uses net metal weight and its metal rate, plus stone value, making and value-addition charges. Discount, CGST, SGST and rounding determine the displayed total. Open the product details for the breakdown."
+    },
+    {
+      "id": 9,
+      "category": "Items",
+      "question": "Where can I see current gold or silver rates?",
+      "answer": "Sign in and open the Market Rate control in the navigation. Select Gold or Silver and a purity to see the displayed rate per gram. Rates may differ from a jeweller's retail price."
+    },
+    {
+      "id": 10,
+      "category": "Orders",
+      "question": "How do I place an order?",
+      "answer": "Sign in as a buyer, add available pieces to the cart, choose or enter a delivery address, and complete checkout. Your reservation then appears in My Orders."
+    },
+    {
+      "id": 11,
+      "category": "Orders",
+      "question": "Where can I see my orders and their status?",
+      "answer": "Sign in and open My Orders from the navigation. Each order shows its current status and details."
+    },
+    {
+      "id": 12,
+      "category": "Orders",
+      "question": "Can I cancel an order?",
+      "answer": "A buyer can cancel an eligible pending or approved order in My Orders. An administrator can also cancel an order with a reason from Manage Orders. Cancelled reservations return their reserved stock."
+    },
+    {
+      "id": 13,
+      "category": "Orders",
+      "question": "How do I download an invoice?",
+      "answer": "Open My Orders, select View invoice for the relevant order group, then choose Download PDF."
+    },
+    {
+      "id": 14,
+      "category": "Low-Stock Alerts",
+      "question": "How do low-stock reorder alerts work?",
+      "answer": "An item needs attention when its stock quantity is at or below its reorder threshold. Administrators can see these pieces in the Restock page and add stock. Verified administrators may receive an email alert after checkout reduces stock."
+    },
+    {
+      "id": 15,
+      "category": "Low-Stock Alerts",
+      "question": "How does an administrator restock a product?",
+      "answer": "Sign in as an administrator and open Restock. Find a low-stock piece and enter the quantity to add. Inventory also lets administrators set each piece's reorder threshold."
+    },
+    {
+      "id": 16,
+      "category": "Items",
+      "question": "Can an administrator import products from a CSV file?",
+      "answer": "Yes. In Manage Jewellery, choose Example CSV for the required columns, edit the file, then select Import CSV. Existing products with matching IDs are updated; new rows create products. Pieces can still be added manually."
+    },
+    {
+      "id": 17,
+      "category": "Feedback",
+      "question": "How do I leave a review and rating?",
+      "answer": "After a piece is delivered, sign in as the buyer and open Reviews or use Share your experience on its product page. Choose 1 to 5 stars, write your review and submit it. You can review each purchased piece once. Buyers see their own written reviews; administrators can see all reviews."
+    },
+    {
+      "id": 18,
+      "category": "Feedback",
+      "question": "Can I remove my review?",
+      "answer": "Yes. Open Reviews while signed in and use Remove on your own review. Buyers cannot remove another customer's review. The product's average star rating updates when a rating is removed."
+    },
+    {
+      "id": 19,
+      "category": "Items",
+      "question": "How do product ratings work?",
+      "answer": "A product's displayed score is the average of its buyers' 1-to-5-star reviews. The product page shows the average and number of ratings. If no one has rated a piece yet, it shows five grey stars and No ratings yet."
+    },
+    {
+      "id": 20,
+      "category": "Items",
+      "question": "How do personal recommendations work?",
+      "answer": "For a signed-in buyer, GemVault suggests available pieces that relate to categories in the buyer's wishlist and terms in their search history. Saved pieces are excluded from the suggestions. A new buyer may see a few available pieces until they save or search."
+    },
+    {
+      "id": 21,
+      "category": "Items",
+      "question": "Can I see a product's description and availability?",
+      "answer": "Yes. Open a piece in Jewellery to read its description, material, purity, weight, current availability, rating and price breakdown. You can also ask this assistant to find available products by name, category, material or budget."
+    },
+    {
+      "id": 22,
+      "category": "Orders",
+      "question": "Can the assistant check my order status?",
+      "answer": "If you're signed in as a buyer, ask about my orders or give an order number. The assistant checks only orders belonging to your account. Open My Orders for full details, cancellation options and invoices."
+    },
+    {
+      "id": 23,
+      "category": "Account",
+      "question": "Can the assistant see my wishlist and saved addresses?",
+      "answer": "If you're signed in as a buyer, ask what is in my wishlist or ask about my saved addresses. The assistant uses only your account. You can change saved pieces in My Wishlist and addresses in Account."
+    }
+  ]
+  

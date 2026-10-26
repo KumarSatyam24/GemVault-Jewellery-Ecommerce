@@ -1,0 +1,68 @@
+<section
+  class="restock-heading flex items-center justify-between gap-6 pt-4 max-[550px]:flex-col max-[550px]:items-start"
+>
+  <div>
+    <p class="eyebrow">Inventory / attention</p>
+    <h1 class="page-heading">Restock</h1>
+    <p class="page-intro !mb-5">
+      Add stock directly to pieces at or below their reorder threshold.
+    </p>
+  </div>
+  <button
+    class="shrink-0 border border-charcoal bg-charcoal px-5 py-3 text-[11px] font-semibold uppercase tracking-widest text-alabaster"
+    type="button"
+    (click)="load()"
+  >
+    Refresh list
+  </button>
+</section>
+<p class="error" *ngIf="error" role="alert">{{ error }}</p>
+<p class="success" *ngIf="message" role="status">{{ message }}</p>
+<div
+  class="restock-count mb-5 border-t border-charcoal/20 py-5 text-xs text-muted"
+>
+  <strong class="mr-2 text-lg font-medium text-charcoal dark:text-alabaster">{{
+    items.length
+  }}</strong>
+  {{ items.length === 1 ? "piece needs" : "pieces need" }} attention
+</div>
+<div *ngIf="items.length" class="mb-5 max-w-md">
+  <label for="restock-search" class="mb-2 block text-[11px] font-semibold uppercase tracking-widest text-charcoal dark:text-alabaster">Search pieces</label>
+  <input id="restock-search" type="search" [(ngModel)]="search" placeholder="Search by name, SKU, category or material" class="!m-0 w-full border border-charcoal/20 bg-transparent px-3 py-3 text-sm text-charcoal focus:border-gold focus:outline-none dark:border-white/25 dark:text-alabaster" />
+  <p class="mt-2 text-xs text-muted" aria-live="polite">{{ filteredItems.length }} of {{ items.length }} pieces</p>
+</div>
+<div class="table-wrap" *ngIf="filteredItems.length">
+  <table>
+    <thead>
+      <tr>
+        <th>Piece</th>
+        <th>In stock</th>
+        <th>Threshold</th>
+        <th>Shortfall</th>
+        <th>Add stock</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let item of filteredItems">
+        <td>
+          <strong>{{ item.itemName }}</strong>
+        </td>
+        <td>{{ item.stockQuantity }}</td>
+        <td>{{ item.reorderThreshold }}</td>
+        <td>{{ item.reorderThreshold - item.stockQuantity }}</td>
+        <td>
+          <div class="flex items-center gap-2">
+            <label class="sr-only" [for]="'restock-' + item.itemId">Quantity to add for {{ item.itemName }}</label>
+            <input [id]="'restock-' + item.itemId" class="!m-0 !w-20" type="number" min="1" step="1" [(ngModel)]="quantities[item.itemId!]" />
+            <button type="button" class="btn-quiet" [disabled]="savingId === item.itemId" (click)="restock(item)">Add stock</button>
+          </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p *ngIf="items.length && !filteredItems.length" class="py-8 text-sm text-muted" role="status">No pieces match your search.</p>
+<div class="empty-state" *ngIf="!items.length && !error">
+  <h2 class="font-display text-3xl">Stock is in good shape</h2>
+  <p class="muted">No pieces currently need restocking.</p>
+</div>

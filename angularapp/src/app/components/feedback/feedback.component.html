@@ -1,0 +1,142 @@
+<section class="page-top pb-3 pt-4">
+  <p class="eyebrow">GemVault / community</p>
+  <h1 class="page-heading">Words from our buyers</h1>
+  <p class="page-intro">
+    Read the experiences behind the pieces, or share your own.
+  </p>
+</section>
+<p class="error" *ngIf="error" role="alert">{{ error }}</p>
+<p class="success" *ngIf="message" role="status">{{ message }}</p>
+<div
+  class="feedback-layout grid grid-cols-[minmax(0,1fr)_minmax(250px,0.65fr)] gap-[clamp(35px,5vw,75px)] border-t border-charcoal/20 pt-8 max-[850px]:grid-cols-1 dark:border-white/20"
+>
+  <section class="review-list" aria-labelledby="review-heading">
+    <div class="section-top flex items-baseline justify-between gap-4">
+      <h2 id="review-heading" class="font-display text-3xl">Reviews</h2>
+      <span class="text-[11px] uppercase tracking-widest text-muted"
+        >{{ feedbacks.length }} entries</span
+      >
+    </div>
+    <p class="muted" *ngIf="loading">Loading reviews...</p>
+    <article
+      class="review border-b border-charcoal/10 py-7 dark:border-white/20"
+      *ngFor="let entry of feedbacks"
+    >
+      <div
+        class="mb-3 flex items-center gap-1 text-gold"
+        [attr.aria-label]="entry.rating + ' out of 5 stars'"
+      >
+        <span
+          *ngFor="let star of stars"
+          class="text-base"
+          [ngClass]="
+            star > entry.rating
+              ? 'text-charcoal/25 dark:text-white/30'
+              : 'text-gold'
+          "
+          aria-hidden="true"
+          >&#9733;</span
+        >
+      </div>
+      <p class="review-text mb-4 font-display text-[21px] leading-relaxed">
+        &ldquo;{{ entry.feedbackText }}&rdquo;
+      </p>
+      <div
+        class="review-meta flex justify-between gap-3 text-[11px] leading-6 text-muted"
+      >
+        <span
+          >{{ entry.user?.username }} &middot;
+          {{ entry.item?.itemName || "General" }} &middot;
+          {{ entry.date }}</span
+        >
+        <button
+          class="btn-quiet"
+          type="button"
+          *ngIf="auth.isCustomer() && entry.userId === auth.getUserId()"
+          (click)="remove(entry)"
+        >
+          Remove
+        </button>
+      </div>
+    </article>
+    <div class="empty-state" *ngIf="!loading && !feedbacks.length">
+      <h3>No reviews yet</h3>
+      <p class="muted">Be the first to share your experience.</p>
+    </div>
+  </section>
+  <section
+    class="review-form self-start rounded-xl border border-charcoal/10 bg-taupe/60 p-8 max-[850px]:row-start-1 max-[550px]:p-6 dark:border-white/15 dark:bg-[#27221e]"
+    *ngIf="auth.isCustomer()"
+    aria-labelledby="share-heading"
+  >
+    <p class="eyebrow">Your perspective</p>
+    <h2
+      id="share-heading"
+      class="mb-3 mt-3 font-display text-3xl leading-tight"
+    >
+      Share an experience
+    </h2>
+    <p class="mb-7 text-[13px] leading-6 text-muted">
+      Your words help others choose with confidence.
+    </p>
+    <p class="text-sm text-muted" *ngIf="!items.length">
+      Delivered pieces you have not reviewed will appear here.
+    </p>
+    <form
+      class="grid gap-6"
+      [formGroup]="form"
+      (ngSubmit)="save()"
+      *ngIf="items.length"
+    >
+      <fieldset class="m-0 border-0 p-0">
+        <legend class="mb-2 text-xs font-semibold uppercase tracking-[0.11em]">
+          Your rating
+        </legend>
+        <div
+          class="flex items-center gap-1"
+          aria-label="Rate this piece from 1 to 5 stars"
+        >
+          <button
+            *ngFor="let star of stars"
+            type="button"
+            class="!min-h-0 !border-0 !bg-transparent !px-1 !py-0 text-[30px] leading-none !shadow-none"
+            [ngClass]="
+              star <= (form.controls.rating.value || 0)
+                ? '!text-gold'
+                : '!text-charcoal/25 dark:!text-white/30'
+            "
+            [attr.aria-label]="star + (star === 1 ? ' star' : ' stars')"
+            [attr.aria-pressed]="form.controls.rating.value === star"
+            (click)="form.controls.rating.setValue(star)"
+          >
+            &#9733;
+          </button>
+        </div>
+      </fieldset>
+      <label>
+        Jewellery piece
+        <app-dropdown
+          class="mt-2 block"
+          formControlName="itemId"
+          [options]="itemOptions"
+          label="Jewellery piece"
+        ></app-dropdown>
+      </label>
+      <label>
+        Your feedback
+        <textarea
+          class="min-h-[130px] !rounded-lg border-charcoal/30 bg-alabaster/80 dark:bg-[#24201d]"
+          formControlName="feedbackText"
+          required
+          placeholder="Tell us what stood out..."
+        ></textarea>
+      </label>
+      <small class="error-text" *ngIf="form.touched && form.invalid"
+        >Choose a star rating and enter your feedback.</small
+      >
+      <button class="mt-1 w-full rounded-lg" type="submit" [disabled]="saving">
+        {{ saving ? "Sending..." : "Send feedback" }}
+      </button>
+    </form>
+  </section>
+</div>

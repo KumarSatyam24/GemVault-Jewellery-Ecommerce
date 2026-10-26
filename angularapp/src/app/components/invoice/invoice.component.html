@@ -1,0 +1,113 @@
+<section
+  class="invoice mt-5 border-t border-charcoal/15 pt-5 dark:border-white/20"
+  *ngIf="orders.length"
+>
+  <div class="flex flex-wrap items-center gap-3">
+    <button type="button" class="btn-quiet" (click)="open = !open">
+      {{ open ? "Hide invoice" : "View invoice" }}
+    </button>
+    <button
+      *ngIf="open"
+      type="button"
+      class="min-h-[34px] rounded-full border border-[#1a1a1a]/[.32] bg-transparent px-[14px] text-[10px] font-bold uppercase tracking-[.11em] text-inherit transition-[color,border-color,background] duration-200 hover:border-[#b48b42] hover:bg-[#b48b42] hover:text-[#1a1a1a]"
+      (click)="downloadPdf()"
+    >
+      Download PDF
+    </button>
+  </div>
+  <div
+    class="mt-5 rounded-xl border border-charcoal/15 bg-taupe/40 p-5 text-xs dark:border-white/20 dark:bg-[#27221e]"
+    *ngIf="open"
+  >
+    <div
+      class="mb-4 flex items-baseline justify-between gap-3 border-b border-charcoal/15 pb-3 dark:border-white/20"
+    >
+      <h3 class="font-display text-2xl">{{ title }}</h3>
+      <strong>{{ total | currency: "INR" }}</strong>
+    </div>
+    <article
+      class="border-b border-charcoal/10 py-4 last:border-0 dark:border-white/15"
+      *ngFor="let order of orders"
+    >
+      <div class="flex flex-wrap justify-between gap-3">
+        <div>
+          <strong>{{
+            order.invoiceItem?.itemName || order.item?.itemName
+          }}</strong>
+          <p class="mt-1 text-muted">
+            {{ order.invoiceItem?.sku || order.item?.sku }} ·
+            {{ order.invoiceItem?.material || order.item?.material }} ·
+            {{ order.invoiceItem?.purity || order.item?.purity }} ·
+            {{ order.quantity }} piece(s)
+          </p>
+        </div>
+        <strong>{{
+          order.billing?.grandTotal ?? order.totalPrice ?? 0 | currency: "INR"
+        }}</strong>
+      </div>
+      <dl
+        class="mt-4 grid grid-cols-2 gap-x-6 gap-y-[.65rem] max-[520px]:grid-cols-1 [&>div]:flex [&>div]:justify-between [&>div]:gap-4 [&>div]:text-[var(--muted)] [&_dd]:m-0 [&_dd]:text-right [&_dd]:text-inherit"
+        *ngIf="order.billing as bill"
+      >
+        <div>
+          <dt>Gross weight</dt>
+          <dd>{{ bill.grossWeight }} g</dd>
+        </div>
+        <div>
+          <dt>Stone weight</dt>
+          <dd>{{ bill.stoneWeight }} g</dd>
+        </div>
+        <div>
+          <dt>Net metal weight</dt>
+          <dd>{{ bill.netMetalWeight }} g</dd>
+        </div>
+        <div>
+          <dt>Metal rate</dt>
+          <dd>{{ bill.metalRate | currency: "INR" }}/g</dd>
+        </div>
+        <div>
+          <dt>Metal value</dt>
+          <dd>{{ bill.metalValue | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>Stone value</dt>
+          <dd>{{ bill.stoneValue | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>Making charges</dt>
+          <dd>{{ bill.makingCharges | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>VA charges</dt>
+          <dd>{{ bill.vaCharges | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>Discount</dt>
+          <dd>−{{ bill.discountAmount | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>Taxable amount</dt>
+          <dd>{{ bill.taxableAmount | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>CGST ({{ bill.cgstRate }}%)</dt>
+          <dd>{{ bill.cgstAmount | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>SGST ({{ bill.sgstRate }}%)</dt>
+          <dd>{{ bill.sgstAmount | currency: "INR" }}</dd>
+        </div>
+        <div>
+          <dt>Round off</dt>
+          <dd>{{ bill.roundOff | currency: "INR" }}</dd>
+        </div>
+        <div
+          class="border-t border-black/[.16] pt-[.65rem] font-bold !text-[var(--ink)]"
+        >
+          <dt>Grand total</dt>
+          <dd>{{ bill.grandTotal | currency: "INR" }}</dd>
+        </div>
+      </dl>
+    </article>
+  </div>
+</section>

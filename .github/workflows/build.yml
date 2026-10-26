@@ -1,0 +1,53 @@
+name: Build
+'on':
+  push:
+    branches:
+      - '*'
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Set up JDK 17
+        uses: actions/setup-java@v1
+        with:
+          java-version: 17
+      - name: Move Pom.xml to Root
+        run: mv .github/workflows/pom.xml ./pom.xml
+      - name: Build and analyze
+        env:
+          GITHUB_TOKEN: >-
+            5e0ed098-cfcf-49d7-8b5c-ac256e383778-10851575-18c2-446d-b62c-c43c19ebfe4d
+          SONAR_TOKEN: sqa_bca47d55147cb1b256a213a17c135dfe863be411
+          SONAR_HOST_URL: '${{ secrets.SONAR_HOST_URL }}'
+        run: >-
+          mvn -B verify org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+          -Dsonar.projectKey=iamneo-production-2_5e0ed098-cfcf-49d7-8b5c-ac256e383778-10851575-18c2-446d-b62c-c43c19ebfe4d
+          -Dsonar.login=sqa_bca47d55147cb1b256a213a17c135dfe863be411
+          -Dsonar.host.url=$SONAR_HOST_URL
+      - name: Trigger API
+        if: always()
+        env:
+          API_URL: '${{ secrets.API_URL }}'
+          API_SECRET: '${{ secrets.API_SECRET }}'
+        run: >
+          REPO_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f 2)
+
+          ORG_NAME=$(echo "${GITHUB_REPOSITORY}" | cut -d '/' -f 1)
+
+          BRANCH_NAME=${GITHUB_REF#refs/heads/}
+
+          API_PAYLOAD="{ \"repo_id\": \"$REPO_NAME\", \"branch_name\":
+          \"$BRANCH_NAME\", \"api_secret\": \"$API_SECRET\", \"org_name\":
+          \"$ORG_NAME\" }"
+
+          curl -X POST -H "Content-Type: application/json" -d "$API_PAYLOAD"
+          $API_URL

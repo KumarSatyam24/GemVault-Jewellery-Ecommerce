@@ -1,0 +1,341 @@
+<section
+  class="collection-hero relative grid min-h-[410px] grid-cols-[52%_48%] overflow-hidden rounded-2xl bg-charcoal text-alabaster dark:bg-[#e9dfd0] dark:text-charcoal max-[680px]:block max-[680px]:min-h-[390px]"
+  aria-labelledby="hero-title"
+>
+  <div
+    class="hero-copy relative z-10 flex flex-col items-start justify-center p-[clamp(35px,5vw,74px)] max-[680px]:min-h-[390px] max-[680px]:justify-end max-[680px]:bg-gradient-to-t max-[680px]:from-black/85 max-[680px]:to-transparent max-[680px]:p-8 max-[680px]:dark:text-alabaster"
+  >
+    <p class="eyebrow">The GemVault collection</p>
+    <h1
+      class="my-6 font-display text-[clamp(42px,4.4vw,68px)] leading-[1.06] tracking-tight max-[680px]:text-[clamp(43px,10vw,65px)]"
+      id="hero-title"
+    >
+      Objects of<br /><em>lasting beauty.</em>
+    </h1>
+    <p
+      class="max-w-[340px] text-sm leading-7 text-[#ddd6cf] dark:text-[#4c4037] max-[680px]:dark:text-alabaster"
+    >
+      Discover rings, bangles and more, chosen for the way you wear them.
+    </p>
+    <a
+      href="#collection"
+      class="hero-link mt-7 border-b border-gold pb-2 text-[11px] font-semibold uppercase tracking-widest text-alabaster no-underline dark:text-charcoal max-[680px]:dark:text-alabaster"
+      >Explore the collection <span aria-hidden="true">↗</span></a
+    >
+  </div>
+  <div
+    class="hero-photo min-h-full overflow-hidden max-[680px]:absolute max-[680px]:inset-0"
+  >
+    <img
+      src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&w=1600&q=85"
+      alt="An illustrative close-up of a gemstone ring"
+      class="h-full w-full object-cover opacity-85"
+    />
+  </div>
+  <span class="hero-index absolute bottom-5 right-5 text-[10px] tracking-widest"
+    >GEMVAULT / 01</span
+  >
+</section>
+
+<section class="collection pb-10 pt-16 max-[680px]:pt-14" id="collection">
+  <div
+    class="collection-intro mb-9 flex items-end justify-between gap-6 max-[680px]:block"
+  >
+    <div>
+      <p class="eyebrow">Curated for you</p>
+      <h2 class="section-heading">The collection</h2>
+    </div>
+    <p class="max-w-[280px] text-[13px] leading-7 text-muted max-[680px]:mt-4">
+      Browse the details and find a piece that feels like yours.
+    </p>
+  </div>
+  <p class="error" *ngIf="error" role="alert">{{ error }}</p>
+
+  <section
+    class="relative mb-12 overflow-hidden rounded-2xl border border-charcoal/10 bg-charcoal px-7 py-8 text-alabaster shadow-[0_20px_45px_rgba(30,28,26,0.14)] max-[680px]:px-5 dark:border-gold/35 dark:bg-[#3a2c20] dark:shadow-[0_20px_45px_rgba(0,0,0,0.28)]"
+    *ngIf="recommendations.length"
+    aria-labelledby="recommendations-heading"
+  >
+    <div
+      class="pointer-events-none absolute -right-16 -top-24 h-64 w-64 rounded-full border border-gold/30"
+    ></div>
+    <div
+      class="pointer-events-none absolute -right-3 -top-11 h-40 w-40 rounded-full border border-gold/20"
+    ></div>
+    <div
+      class="relative flex items-end justify-between gap-6 max-[680px]:block"
+    >
+      <div>
+        <p
+          class="text-[10px] font-semibold uppercase tracking-[0.28em] text-gold"
+        >
+          Your GemVault edit
+        </p>
+        <h2
+          id="recommendations-heading"
+          class="mt-3 font-display text-[clamp(30px,3vw,44px)] leading-tight"
+        >
+          Selected for <em>you.</em>
+        </h2>
+        <p class="mt-2 max-w-xl text-sm leading-6 text-[#d6cec5]">
+          A small selection shaped by the pieces you save and explore.
+        </p>
+      </div>
+      <span
+        class="shrink-0 border border-gold/50 px-3 py-2 text-[10px] font-semibold uppercase tracking-widest text-gold max-[680px]:mt-5 max-[680px]:inline-block"
+        >Personal edit</span
+      >
+    </div>
+    <div class="relative mt-7 grid grid-cols-3 gap-5 max-[720px]:grid-cols-1">
+      <article
+        class="group"
+        *ngFor="let item of recommendations; let index = index"
+      >
+        <div class="relative">
+          <button
+            type="button"
+            class="relative block w-full overflow-hidden rounded-xl border-0 bg-[#302b27] p-0 text-left"
+            (click)="select(item)"
+            [attr.aria-label]="'View recommended piece ' + item.itemName"
+          >
+            <img
+              class="aspect-[1.42/1] w-full object-cover opacity-90 transition duration-500 group-hover:scale-105 group-hover:opacity-100"
+              [src]="item.imageUrl || imageFallback"
+              (error)="imageFailed($event)"
+              [alt]="item.itemName"
+            />
+            <span
+              class="absolute left-3 top-3 bg-charcoal/85 px-2 py-1 text-[9px] font-semibold uppercase tracking-widest text-gold"
+              >0{{ index + 1 }}</span
+            >
+          </button>
+          <button
+            type="button"
+            class="group/heart absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border border-white/70 bg-[#1d1b19]/75 text-xl text-white backdrop-blur-sm transition hover:border-gold hover:text-gold"
+            (click)="toggleWishlist(item)"
+            [attr.aria-label]="
+              wishedIds.has(item.itemId || 0)
+                ? 'Remove from wishlist'
+                : 'Add to wishlist'
+            "
+            [attr.title]="
+              wishedIds.has(item.itemId || 0)
+                ? 'Remove from wishlist'
+                : 'Add to wishlist'
+            "
+          >
+            {{ wishedIds.has(item.itemId || 0) ? "♥" : "♡" }}
+          </button>
+        </div>
+        <div class="mt-3 flex items-center justify-between gap-3">
+          <div>
+            <p
+              class="text-[9px] font-semibold uppercase tracking-widest text-gold"
+            >
+              {{ item.category }} / {{ item.material }}
+            </p>
+            <h3 class="mt-1 font-display text-xl leading-tight text-alabaster">
+              {{ item.itemName }}
+            </h3>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <div
+    class="collection-tools flex flex-wrap items-center justify-between gap-5 border-y border-charcoal/20 py-4 dark:border-white/20"
+  >
+    <div
+      class="category-list flex flex-wrap items-center gap-4"
+      role="group"
+      aria-label="Filter by category"
+    >
+      <button
+        class="border-b border-transparent bg-transparent py-2 text-[11px] font-semibold uppercase tracking-wide text-muted hover:border-gold hover:text-charcoal [&.selected]:border-gold [&.selected]:text-charcoal dark:text-[#bcb5ac] dark:[&.selected]:text-alabaster"
+        type="button"
+        *ngFor="let option of categories"
+        [class.selected]="category === option"
+        (click)="category = option"
+        [attr.aria-pressed]="category === option"
+      >
+        {{ option }}
+      </button>
+    </div>
+    <div
+      class="search-sort flex flex-wrap items-center gap-4 max-[420px]:w-full"
+    >
+      <div class="relative max-[420px]:w-[calc(50%-8px)]">
+        <label class="sr-only" for="collection-search">Search jewellery</label>
+        <input
+          id="collection-search"
+          class="!m-0 !min-h-9 !w-[150px] !border-0 !border-b !border-charcoal/25 !bg-transparent !px-2 !py-1 !text-xs max-[420px]:!w-full"
+          type="search"
+          [(ngModel)]="search"
+          (ngModelChange)="recordSearch()"
+          (focus)="showSearchHistory()"
+          (blur)="hideSearchHistory()"
+          (keydown.enter)="recordSearch()"
+          placeholder="Search pieces"
+          autocomplete="off"
+        />
+        <div
+          *ngIf="searchFocused && searchSuggestions.length"
+          class="absolute right-0 top-[calc(100%+8px)] z-30 w-[250px] overflow-hidden rounded-lg border border-charcoal/15 bg-alabaster py-2 shadow-xl dark:border-white/20 dark:bg-[#24201d] max-[420px]:w-[220px]"
+          role="listbox"
+          aria-label="Recent searches"
+        >
+          <p
+            class="px-3 pb-1 pt-1 text-[9px] font-semibold uppercase tracking-widest text-muted"
+          >
+            Recent searches
+          </p>
+          <button
+            type="button"
+            class="block w-full border-0 bg-transparent px-3 py-2 text-left text-xs text-charcoal transition-colors hover:bg-taupe/60 dark:text-alabaster dark:hover:bg-white/10"
+            *ngFor="let term of searchSuggestions"
+            (mousedown)="$event.preventDefault()"
+            (click)="selectSearch(term)"
+            role="option"
+          >
+            {{ term }}
+          </button>
+        </div>
+      </div>
+      <label class="sr-only" for="collection-sort">Sort pieces</label>
+      <app-dropdown
+        id="collection-sort"
+        class="block w-[170px] max-[420px]:w-[calc(50%-8px)]"
+        [(ngModel)]="sort"
+        [options]="sortOptions"
+        label="Sort pieces"
+      ></app-dropdown>
+    </div>
+  </div>
+  <p
+    class="result-count my-5 text-[11px] uppercase tracking-widest text-muted"
+    *ngIf="!loading"
+  >
+    {{ displayedItems.length }}
+    {{ displayedItems.length === 1 ? "piece" : "pieces" }}
+  </p>
+  <div
+    class="product-grid grid grid-cols-3 gap-x-5 gap-y-10 max-[1020px]:grid-cols-2 max-[420px]:grid-cols-1"
+    *ngIf="loading"
+    aria-label="Loading collection"
+  >
+    <div
+      class="product-skeleton animate-pulse"
+      *ngFor="let number of [1, 2, 3, 4]"
+    >
+      <div class="aspect-[1/1.04] rounded-xl bg-taupe dark:bg-[#27221e]"></div>
+      <span class="mt-4 block h-3 w-2/3 bg-taupe dark:bg-[#27221e]"></span
+      ><span class="mt-4 block h-3 w-1/3 bg-taupe dark:bg-[#27221e]"></span>
+    </div>
+  </div>
+  <div
+    class="product-grid grid grid-cols-3 gap-x-5 gap-y-10 max-[1020px]:grid-cols-2 max-[420px]:grid-cols-1"
+    *ngIf="!loading && displayedItems.length"
+  >
+    <article class="product" *ngFor="let item of displayedItems">
+      <div class="relative">
+        <button
+          class="product-image relative block aspect-[1/1.04] w-full overflow-hidden rounded-xl border-0 bg-taupe p-0"
+          type="button"
+          (click)="select(item)"
+          [attr.aria-label]="'View details for ' + item.itemName"
+        >
+          <img
+            [src]="item.imageUrl || imageFallback"
+            (error)="imageFailed($event)"
+            [alt]="item.itemName"
+            loading="lazy"
+            class="h-full w-full object-cover transition-transform duration-500 hover:scale-[1.035]"
+          />
+          <span
+            *ngIf="item.stockQuantity < 1"
+            class="sold-out absolute left-4 top-4 bg-alabaster px-2 py-2 text-[10px] uppercase tracking-wide text-charcoal"
+            >Out of stock</span
+          >
+        </button>
+        <button
+          type="button"
+          class="absolute right-3 top-3 z-10 grid h-10 w-10 place-items-center rounded-full border border-white/70 bg-[#1d1b19]/75 text-xl text-white backdrop-blur-sm transition hover:border-gold hover:text-gold"
+          (click)="toggleWishlist(item)"
+          [attr.aria-label]="
+            wishedIds.has(item.itemId || 0)
+              ? 'Remove from wishlist'
+              : 'Add to wishlist'
+          "
+          [attr.title]="
+            wishedIds.has(item.itemId || 0)
+              ? 'Remove from wishlist'
+              : 'Add to wishlist'
+          "
+        >
+          {{ wishedIds.has(item.itemId || 0) ? "♥" : "♡" }}
+        </button>
+      </div>
+      <div
+        class="product-meta mt-4 flex justify-between gap-2 text-[10px] font-semibold uppercase tracking-widest text-muted max-[680px]:block"
+      >
+        <span>{{ item.category }} / {{ item.material }}</span
+        ><span class="max-[680px]:hidden">{{ item.sku }}</span>
+      </div>
+      <h3
+        class="my-3 font-display text-[clamp(20px,2vw,26px)] leading-tight max-[680px]:text-lg"
+      >
+        {{ item.itemName }}
+      </h3>
+      <div
+        class="product-bottom flex items-center justify-between gap-3 text-sm max-[680px]:block"
+      >
+        <span>{{ item.totalPrice | currency: "INR" }}</span>
+        <div class="flex flex-wrap items-center gap-2 max-[680px]:mt-3">
+          <button
+            class="inline-flex min-h-[35px] items-center rounded-full border border-charcoal bg-charcoal px-3 text-[10px] font-semibold uppercase tracking-widest text-alabaster transition-colors hover:border-gold hover:bg-gold hover:text-charcoal dark:border-alabaster dark:bg-alabaster dark:text-charcoal dark:hover:border-gold dark:hover:bg-gold"
+            type="button"
+            (click)="select(item)"
+          >
+            View
+          </button>
+        </div>
+      </div>
+    </article>
+  </div>
+  <div class="empty-state" *ngIf="!loading && !displayedItems.length && !error">
+    <h3>No pieces found</h3>
+    <p class="muted">Try another category or search term.</p>
+    <button
+      class="btn-quiet"
+      type="button"
+      (click)="category = 'All'; search = ''"
+    >
+      Clear filters
+    </button>
+  </div>
+</section>
+
+<section
+  class="collection-note mt-16 grid overflow-hidden border-y border-charcoal/20 max-[760px]:grid-cols-1 min-[761px]:grid-cols-[1.08fr_0.92fr] dark:border-white/20"
+>
+  <div class="px-[clamp(26px,5vw,78px)] py-[clamp(42px,6vw,86px)]">
+    <p class="eyebrow">The finer details</p>
+    <h2 class="my-5 font-display text-[clamp(42px,4.4vw,68px)] leading-[1.06]">
+      Made to be<br /><em>remembered.</em>
+    </h2>
+  </div>
+  <div
+    class="flex flex-col justify-between border-l border-charcoal/20 bg-taupe/35 px-[clamp(26px,5vw,78px)] py-[clamp(42px,6vw,86px)] max-[760px]:border-l-0 max-[760px]:border-t dark:border-white/20 dark:bg-[#27221e]"
+  >
+    <p class="max-w-[360px] text-[15px] leading-8 text-muted">
+      From a subtle daily signature to a piece reserved for celebration, explore
+      jewellery with intention.
+    </p>
+    <a
+      href="#collection"
+      class="mt-10 inline-flex w-fit border-b border-gold pb-2 text-[10px] font-semibold uppercase tracking-widest text-charcoal no-underline transition-colors hover:text-gold dark:text-alabaster"
+      >Return to the collection</a
+    >
+  </div>
+</section>

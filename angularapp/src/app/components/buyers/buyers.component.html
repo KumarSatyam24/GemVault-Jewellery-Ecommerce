@@ -1,0 +1,76 @@
+<section class="page-top pb-3 pt-4">
+  <p class="eyebrow">Account management</p>
+  <h1 class="page-heading">Buyer accounts</h1>
+  <p class="page-intro">
+    Invite buyers to browse the collection, save addresses and place orders.
+  </p>
+</section>
+<p class="error" *ngIf="error" role="alert">{{ error }}</p>
+<p class="success" *ngIf="message" role="status">{{ message }}</p>
+<section
+  class="buyer-section grid grid-cols-[minmax(220px,0.65fr)_minmax(0,1.35fr)] gap-[clamp(35px,5vw,80px)] border-t border-charcoal/20 pt-9 max-[850px]:grid-cols-1 dark:border-white/20"
+>
+  <div class="section-copy">
+    <p class="eyebrow">New account</p>
+    <h2 class="my-3 font-display text-[32px]">Invite a buyer</h2>
+    <p class="max-w-[300px] text-[13px] leading-7 text-muted">
+      GemVault emails a secure activation link. The buyer chooses their own
+      password before entering the application.
+    </p>
+  </div>
+  <form
+    [formGroup]="form"
+    (ngSubmit)="save()"
+    class="grid content-start gap-5 rounded-2xl border border-charcoal/15 bg-taupe/35 p-6 max-[600px]:p-4 dark:border-white/15 dark:bg-[#27221e]"
+  >
+    <div
+      class="grid grid-cols-2 gap-5 max-[600px]:grid-cols-1 [&_label]:min-w-0 [&_input]:w-full"
+    >
+      <label
+        >Full name
+        <input formControlName="username" required autocomplete="name" />
+        <small
+          class="error-text"
+          *ngIf="
+            form.controls.username.touched && form.controls.username.invalid
+          "
+          >Enter a name.</small
+        >
+      </label>
+      <label
+        >Email address
+        <input
+          type="email"
+          formControlName="email"
+          required
+          autocomplete="email"
+        />
+        <small
+          class="error-text"
+          *ngIf="form.controls.email.touched && form.controls.email.invalid"
+          >Enter a valid email.</small
+        >
+      </label>
+    </div>
+    <label
+      >Mobile number <span class="optional">(Optional)</span>
+      <input
+        formControlName="mobileNumber"
+        maxlength="10"
+        inputmode="numeric"
+        autocomplete="tel"
+      />
+      <small
+        class="error-text"
+        *ngIf="
+          form.controls.mobileNumber.touched &&
+          form.controls.mobileNumber.invalid
+        "
+        >Use 10 digits starting with 6, 7, 8, or 9, or leave blank.</small
+      >
+    </label>
+    <button type="submit" [disabled]="saving">
+      {{ saving ? "Sending…" : "Send buyer invitation" }}
+    </button>
+  </form>
+</section>

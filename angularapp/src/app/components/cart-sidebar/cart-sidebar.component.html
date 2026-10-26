@@ -1,0 +1,175 @@
+<button
+  class="bag-backdrop fixed inset-0 z-[80] w-full border-0 bg-black/50"
+  type="button"
+  *ngIf="mobileOpen"
+  (click)="closeRequested.emit()"
+  aria-label="Close cart"
+></button>
+<aside
+  id="shopping-cart"
+  class="cart-sidebar invisible fixed bottom-0 right-0 top-0 z-[81] w-full max-w-[410px] translate-x-[105%] overflow-y-auto bg-alabaster px-6 py-8 shadow-2xl transition-transform duration-300 dark:bg-[#1d1a18] [&.is-open]:visible [&.is-open]:translate-x-0"
+  [class.is-open]="mobileOpen"
+  [attr.aria-hidden]="!mobileOpen"
+  aria-label="Shopping cart"
+>
+  <div class="bag-heading mb-5 flex items-start justify-between gap-3">
+    <div>
+      <p class="eyebrow">Your selection</p>
+      <h2 class="mt-2 font-display text-[27px] leading-tight">
+        Shopping cart
+        <span class="font-sans text-sm text-muted"
+          >({{ cart.quantityCount }})</span
+        >
+      </h2>
+    </div>
+    <button
+      class="bag-close border-0 bg-transparent text-3xl leading-none"
+      type="button"
+      (click)="closeRequested.emit()"
+      aria-label="Close cart"
+    >
+      ×
+    </button>
+  </div>
+  <p class="error" *ngIf="error" role="alert">{{ error }}</p>
+  <p
+    class="bag-empty py-6 text-sm leading-7 text-muted"
+    *ngIf="!cart.lines.length"
+  >
+    Your cart is waiting for something special.
+    <a
+      class="text-charcoal underline underline-offset-4 dark:text-alabaster"
+      routerLink="/"
+      (click)="closeRequested.emit()"
+      >Explore jewellery</a
+    >
+  </p>
+  <div
+    class="cart-line border-t border-charcoal/10 py-5 dark:border-white/20"
+    *ngFor="let line of cart.lines"
+  >
+    <div class="line-top flex items-start justify-between gap-3">
+      <strong class="font-display text-[17px] font-medium leading-6">{{
+        line.itemName
+      }}</strong>
+      <button
+        class="remove-link border-0 bg-transparent text-[11px] text-muted underline underline-offset-4"
+        type="button"
+        (click)="cart.remove(line.itemId)"
+      >
+        Remove
+      </button>
+    </div>
+    <span class="line-price mt-2 block text-xs text-muted"
+      >{{ line.unitPrice | currency: "INR" }} each</span
+    >
+    <label class="mt-4 block w-[90px]"
+      >Quantity
+      <input
+        type="number"
+        min="1"
+        [max]="line.stockQuantity"
+        [value]="line.quantity"
+        #quantity
+        (change)="change(line.itemId, quantity.value)"
+      />
+    </label>
+  </div>
+  <ng-container *ngIf="cart.lines.length">
+    <div
+      class="bag-total flex justify-between gap-3 border-t border-charcoal pt-5 text-sm dark:border-white/20"
+    >
+      <span>Subtotal</span><strong>{{ cart.total | currency: "INR" }}</strong>
+    </div>
+    <dl
+      class="my-4 space-y-2 border-b border-charcoal/10 pb-4 text-xs text-muted dark:border-white/20"
+      *ngIf="cart.billingTotal.taxableAmount"
+    >
+      <div class="flex justify-between gap-3">
+        <dt>Metal value</dt>
+        <dd>{{ cart.billingTotal.metalValue | currency: "INR" }}</dd>
+      </div>
+      <div
+        class="flex justify-between gap-3"
+        *ngIf="cart.billingTotal.stoneValue"
+      >
+        <dt>Stone value</dt>
+        <dd>{{ cart.billingTotal.stoneValue | currency: "INR" }}</dd>
+      </div>
+      <div class="flex justify-between gap-3">
+        <dt>Making + VA charges</dt>
+        <dd>
+          {{
+            cart.billingTotal.makingCharges + cart.billingTotal.vaCharges
+              | currency: "INR"
+          }}
+        </dd>
+      </div>
+      <div
+        class="flex justify-between gap-3"
+        *ngIf="cart.billingTotal.discountAmount"
+      >
+        <dt>Discount</dt>
+        <dd>−{{ cart.billingTotal.discountAmount | currency: "INR" }}</dd>
+      </div>
+      <div class="flex justify-between gap-3">
+        <dt>CGST + SGST</dt>
+        <dd>
+          {{
+            cart.billingTotal.cgstAmount + cart.billingTotal.sgstAmount
+              | currency: "INR"
+          }}
+        </dd>
+      </div>
+      <div
+        class="flex justify-between gap-3 font-semibold text-charcoal dark:text-alabaster"
+      >
+        <dt>Grand total</dt>
+        <dd>{{ cart.billingTotal.grandTotal | currency: "INR" }}</dd>
+      </div>
+    </dl>
+    <p class="bag-caption mb-6 mt-2 text-[11px] leading-5 text-muted">
+      Final prices and stock are confirmed before Razorpay opens. Your pieces
+      are held while you complete the test payment.
+    </p>
+    <label class="my-5 block"
+      >Delivery address
+      <app-dropdown
+        [(ngModel)]="addressId"
+        [options]="addressOptions"
+        label="Delivery address"
+      ></app-dropdown>
+    </label>
+    <p class="address-prompt text-xs text-muted" *ngIf="!addresses.length">
+      <a
+        class="text-charcoal underline underline-offset-4 dark:text-alabaster"
+        routerLink="/profile"
+        (click)="closeRequested.emit()"
+        >Add a saved address</a
+      >
+      to continue.
+    </p>
+    <label class="my-5 block"
+      >Order note <span class="optional">(Optional)</span
+      ><textarea
+        [(ngModel)]="comments"
+        maxlength="2000"
+        placeholder="Anything we should know?"
+      ></textarea>
+    </label>
+    <button
+      class="checkout-button mt-2 w-full border border-charcoal bg-charcoal px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-alabaster hover:border-gold hover:bg-gold hover:text-charcoal"
+      type="button"
+      [disabled]="saving || refreshing || !addressId"
+      (click)="checkout()"
+    >
+      {{
+        saving
+          ? "Preparing payment…"
+          : pendingPayment && savedCartMatches()
+            ? "Resume test payment"
+            : "Pay securely · test mode"
+      }}
+    </button>
+  </ng-container>
+</aside>

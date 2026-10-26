@@ -1,0 +1,154 @@
+<section class="auth-page">
+  <div class="auth-art login-art">
+    <img
+      src="https://images.unsplash.com/photo-1602173574767-37ac01994b2a?auto=format&fit=crop&w=1400&q=85"
+      alt="Illustrative gold jewellery still life"
+    />
+    <div class="art-caption">
+      <span class="eyebrow">GemVault atelier</span>
+      <p>A little beauty<br /><em>in every day.</em></p>
+    </div>
+  </div>
+  <div class="auth-content">
+    <div class="auth-form-wrap">
+      <p class="eyebrow">Welcome back</p>
+      <h1>Sign in</h1>
+      <p class="auth-intro">Welcome back to your collection.</p>
+      <p class="error" *ngIf="error" role="alert">{{ error }}</p>
+      <p class="success" *ngIf="message" role="status">{{ message }}</p>
+      <form *ngIf="!awaitingAdminCode" [formGroup]="form" (ngSubmit)="login()">
+        <label
+          >Email address
+          <input
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            required
+            placeholder="you@example.com"
+        /></label>
+        <small
+          class="error-text"
+          *ngIf="form.controls.email.touched && form.controls.email.invalid"
+          >Enter a valid email address.</small
+        >
+        <label
+          >Password
+          <span class="password-field">
+            <input
+              class="[&::-ms-reveal]:hidden [&::-ms-clear]:hidden"
+              [type]="showPassword ? 'text' : 'password'"
+              aria-label="Password"
+              formControlName="password"
+              autocomplete="current-password"
+              required
+              placeholder="Your password"
+            />
+            <button
+              class="password-toggle"
+              type="button"
+              (click)="showPassword = !showPassword"
+              [attr.aria-label]="
+                showPassword ? 'Hide password' : 'Show password'
+              "
+              [attr.aria-pressed]="showPassword"
+            >
+              <svg
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.7"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M2 12s3.6-6 10-6 10 6 10 6-3.6 6-10 6S2 12 2 12Z" />
+                <circle cx="12" cy="12" r="2.5" />
+                <path *ngIf="showPassword" d="M3 21 21 3" />
+              </svg>
+            </button> </span
+        ></label>
+        <small
+          class="error-text"
+          *ngIf="
+            form.controls.password.touched && form.controls.password.invalid
+          "
+          >Password is required.</small
+        >
+        <button class="auth-submit" type="submit" [disabled]="saving">
+          {{ saving ? "Signing in…" : "Sign in" }}
+        </button>
+      </form>
+      <form
+        *ngIf="awaitingAdminCode"
+        (ngSubmit)="verifyCode()"
+        class="mt-6 space-y-4"
+      >
+        <label
+          for="admin-code"
+          class="block text-xs font-semibold uppercase tracking-widest"
+          >Email verification code</label
+        >
+        <input
+          id="admin-code"
+          name="adminCode"
+          type="text"
+          inputmode="numeric"
+          autocomplete="one-time-code"
+          maxlength="6"
+          pattern="[0-9]{6}"
+          [(ngModel)]="adminCode"
+          required
+          class="w-full border border-current/30 bg-transparent px-4 py-3 text-center text-2xl tracking-[.4em]"
+        />
+        <button class="auth-submit" type="submit" [disabled]="saving">
+          {{ saving ? "Verifying..." : "Verify and sign in" }}
+        </button>
+        <button
+          type="button"
+          class="text-sm underline"
+          (click)="awaitingAdminCode = false; adminCode = ''; message = ''"
+        >
+          Back to sign in
+        </button>
+      </form>
+      <div
+        *ngIf="!awaitingAdminCode"
+        class="my-[18px] flex items-center gap-3 text-xs uppercase tracking-[.14em] text-[var(--muted,#6a625b)] before:flex-1 before:border-t before:border-current before:opacity-30 after:flex-1 after:border-t after:border-current after:opacity-30"
+      >
+        <span>or</span>
+      </div>
+      <button
+        *ngIf="!awaitingAdminCode"
+        class="flex min-h-[46px] w-full cursor-pointer items-center justify-center gap-[11px] rounded-lg border border-[#1a1a1a]/[.28] bg-white text-[13px] font-semibold text-[#3c4043] transition-[border-color,box-shadow,background] duration-200 hover:border-[#8c6b34] hover:shadow-[0_2px_8px_rgba(0,0,0,.12)] dark:hover:bg-white/10"
+        type="button"
+        (click)="signInWithGoogle()"
+      >
+        <svg class="h-5 w-5 shrink-0" viewBox="0 0 24 24" aria-hidden="true">
+          <path
+            fill="#4285F4"
+            d="M21.35 12.23c0-.71-.06-1.4-.18-2.05H12v3.88h5.24a4.48 4.48 0 0 1-1.94 2.94v2.52h3.15c1.84-1.69 2.9-4.18 2.9-7.29Z"
+          />
+          <path
+            fill="#34A853"
+            d="M12 21.75c2.63 0 4.84-.87 6.45-2.36l-3.15-2.44c-.87.58-1.99.92-3.3.92-2.54 0-4.69-1.71-5.46-4.01H3.3v2.52A9.75 9.75 0 0 0 12 21.75Z"
+          />
+          <path
+            fill="#FBBC05"
+            d="M6.54 13.86A5.86 5.86 0 0 1 6.24 12c0-.64.11-1.26.3-1.86V7.62H3.3A9.75 9.75 0 0 0 2.25 12c0 1.57.38 3.05 1.05 4.38l3.24-2.52Z"
+          />
+          <path
+            fill="#EA4335"
+            d="M12 6.13c1.43 0 2.72.49 3.74 1.46l2.8-2.8C16.83 3.2 14.62 2.25 12 2.25A9.75 9.75 0 0 0 3.3 7.62l3.24 2.52C7.31 7.84 9.46 6.13 12 6.13Z"
+          />
+        </svg>
+        Continue with Google
+      </button>
+      <p *ngIf="!awaitingAdminCode" class="auth-switch">
+        <a routerLink="/forgot-password">Forgot your password?</a>
+      </p>
+      <p *ngIf="!awaitingAdminCode" class="auth-switch">
+        New to GemVault? <a routerLink="/signup">Create an account</a>
+      </p>
+    </div>
+  </div>
+</section>

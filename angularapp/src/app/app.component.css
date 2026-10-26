@@ -1,0 +1,26 @@
+.rate-toggle:hover strong {
+    color: #b48b42;
+  }
+  
+  .rate-dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: #b48b42;
+    box-shadow: 0 0 0 4px rgba(180, 139, 66, .13);
+  }
+  
+  .footer-top>span:last-child {
+    display: none;
+  }
+  
+  @media (max-width: 1220px) and (min-width: 721px) {
+    .primary-nav {
+      gap: 18px !important;
+    }
+  
+    .header-actions {
+      margin-left: 20px;
+      gap: 14px;
+    }
+  }

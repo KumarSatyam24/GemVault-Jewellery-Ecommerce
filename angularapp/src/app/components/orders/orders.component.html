@@ -1,0 +1,118 @@
+<section class="page-top pb-3 pt-4">
+  <p class="eyebrow">Your account / purchases</p>
+  <h1 class="page-heading">My orders</h1>
+  <p class="page-intro">
+    Follow each piece from reservation to delivery. You can cancel a pending or
+    approved item here.
+  </p>
+</section>
+<p class="error" *ngIf="error" role="alert">{{ error }}</p>
+<p class="success" *ngIf="message" role="status">{{ message }}</p>
+<div class="loading-list" *ngIf="loading" aria-label="Loading orders">
+  <div
+    class="mb-3 h-[140px] animate-pulse bg-taupe motion-reduce:animate-none dark:bg-[#27221e]"
+    *ngFor="let number of [1, 2, 3]"
+  ></div>
+</div>
+<section
+  class="order-list border-t border-charcoal/20 dark:border-white/20"
+  *ngIf="!loading && groups.length"
+  aria-label="Purchase history"
+>
+  <article
+    class="purchase border-b border-charcoal/20 pb-9 pt-7 dark:border-white/20"
+    *ngFor="let group of groups"
+  >
+    <header
+      class="purchase-heading mb-5 flex items-start justify-between gap-5 max-[550px]:block"
+    >
+      <div>
+        <p class="eyebrow">Purchase record</p>
+        <h2 class="mt-2 font-display text-[29px]">{{ group.label }}</h2>
+      </div>
+      <div
+        class="purchase-summary flex flex-col items-end gap-2 text-xs text-muted max-[550px]:mt-4 max-[550px]:flex-row max-[550px]:justify-between"
+      >
+        <span>{{ group.date }}</span
+        ><strong
+          class="text-[17px] font-medium text-charcoal dark:text-alabaster"
+          >{{ group.total | currency: "INR" }}</strong
+        >
+      </div>
+    </header>
+    <div
+      class="purchase-line flex flex-wrap items-center justify-between gap-x-5 gap-y-3 border-t border-charcoal/10 py-4 dark:border-white/10"
+      *ngFor="let order of group.orders"
+    >
+      <div class="line-main flex items-baseline gap-5">
+        <span class="line-number min-w-[30px] text-[11px] text-gold"
+          >#{{ order.orderId }}</span
+        >
+        <div>
+          <h3 class="font-display text-xl">{{ order.item?.itemName }}</h3>
+          <p class="mt-1 text-xs text-muted">
+            {{ order.quantity }}
+            {{ order.quantity === 1 ? "piece" : "pieces" }} ·
+            {{ order.totalPrice | currency: "INR" }}
+          </p>
+        </div>
+      </div>
+      <div
+        class="line-action flex items-center gap-5 max-[550px]:ml-12 max-[550px]:w-full max-[550px]:justify-between"
+      >
+        <span
+          class="status inline-block border-l-2 border-gold pl-2 text-[11px] font-semibold uppercase tracking-wide [&.status-cancelled]:border-[#a33a31]"
+          [class.status-cancelled]="
+            order.status === 'Cancelled' || order.status === 'Rejected'
+          "
+          >{{ order.status }}</span
+        ><a
+          *ngIf="order.status === 'Delivered' && !reviewedIds.has(order.itemId)"
+          [routerLink]="['/feedback']"
+          [queryParams]="{ itemId: order.itemId }"
+          class="inline-flex min-h-[38px] items-center justify-center rounded-full border border-gold px-4 py-2 text-[10px] font-semibold uppercase tracking-[0.12em] text-charcoal no-underline transition-colors hover:bg-gold hover:text-charcoal dark:text-alabaster dark:hover:text-charcoal"
+          >Write feedback <span class="ml-2" aria-hidden="true">↗</span></a
+        ><span
+          class="text-xs text-muted"
+          *ngIf="order.status === 'Delivered' && reviewedIds.has(order.itemId)"
+          >Reviewed</span
+        ><button
+          class="btn-quiet"
+          type="button"
+          *ngIf="order.status === 'Pending' || order.status === 'Approved'"
+          (click)="remove(order)"
+        >
+          Cancel item
+        </button>
+      </div>
+      <p
+        class="line-reason ml-12 basis-full text-xs text-muted"
+        *ngIf="order.cancellationReason"
+      >
+        Cancellation reason: {{ order.cancellationReason }}
+      </p>
+      <p class="ml-12 basis-full text-xs text-muted" *ngIf="order.refundStatus">
+        Razorpay refund: {{ order.refundStatus }}
+      </p>
+    </div>
+    <p
+      class="delivery mt-2 text-xs leading-6 text-muted"
+      *ngIf="group.orders[0]?.deliveryAddress"
+    >
+      <span
+        class="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-charcoal dark:text-alabaster"
+        >Delivering to</span
+      >
+      {{ group.orders[0].deliveryAddress }}
+    </p>
+    <app-invoice
+      [orders]="group.orders"
+      [title]="group.label + ' invoice'"
+    ></app-invoice>
+  </article>
+</section>
+<div class="empty-state" *ngIf="!loading && !groups.length && !error">
+  <h2 class="font-display text-[31px]">No orders yet</h2>
+  <p class="muted">The pieces you choose will appear here.</p>
+  <a class="btn mt-4 no-underline" routerLink="/">Explore jewellery</a>
+</div>

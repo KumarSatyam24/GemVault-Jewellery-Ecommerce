@@ -1,0 +1,471 @@
+<p *ngIf="loading" class="py-20 text-center text-sm text-muted">
+  Loading piece...
+</p>
+
+<section *ngIf="item" class="mx-auto max-w-editorial pb-20 pt-5 sm:pt-8" aria-labelledby="product-title">
+  <nav class="mb-6 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted sm:mb-9"
+    aria-label="Breadcrumb">
+    <a [routerLink]="fromWishlist ? '/wishlist' : '/'" class="transition-colors hover:text-gold">{{ fromWishlist ?
+      "Wishlist" : "Collection" }}</a>
+    <span aria-hidden="true">/</span><span>{{ item.category }}</span><span aria-hidden="true">/</span>
+    <span class="truncate text-charcoal dark:text-alabaster">{{
+      item.itemName
+      }}</span>
+  </nav>
+
+  <div
+    class="grid items-start gap-8 lg:grid-cols-[minmax(0,1.05fr)_minmax(370px,.95fr)] lg:gap-[clamp(48px,6vw,108px)]">
+    <figure class="relative m-0 overflow-hidden rounded-[4px] bg-taupe dark:bg-[#29231e]">
+      <ng-container *ngIf="item.itemName === 'Celestial Gold Ring'; else necklacePreview">
+        <model-viewer style="
+            display: block;
+            width: 100%;
+            height: clamp(360px, 65vh, 760px);
+            background: radial-gradient(ellipse, #fff, #eeeae4);
+          " src="assets/models/ring.glb" [attr.alt]="item.itemName + ' — interactive 3D preview'" camera-controls
+          touch-action="pan-y" camera-orbit="15deg 20deg auto" environment-image="neutral" shadow-intensity="0.6"
+          exposure="1"></model-viewer>
+        <p class="m-0 px-4 py-3 text-center text-xs text-muted">
+          Drag to rotate · Scroll or pinch to zoom
+        </p>
+      </ng-container>
+
+      <ng-template #necklacePreview>
+        <ng-container *ngIf="item.itemName === 'Moonlit Pearl Necklace'; else earringsPreview">
+          <model-viewer style="
+              display: block;
+              width: 100%;
+              height: clamp(360px, 65vh, 760px);
+              background: radial-gradient(ellipse, #e8e2da, #c9c0b5);
+            " src="assets/models/necklace.glb" [attr.alt]="item.itemName + ' — interactive 3D preview'" camera-controls
+            touch-action="pan-y" camera-orbit="0deg 70deg auto" environment-image="neutral" shadow-intensity="0.4"
+            exposure="1">
+          </model-viewer>
+          <p class="m-0 px-4 py-3 text-center text-xs text-muted">
+            Drag to rotate · Scroll or pinch to zoom
+          </p>
+        </ng-container>
+      </ng-template>
+
+      <ng-template #earringsPreview>
+        <ng-container *ngIf="item.itemName === 'Sapphire Diamond Earrings'; else pinkRingPreview">
+          <model-viewer style="
+              display: block;
+              width: 100%;
+              height: clamp(360px, 65vh, 760px);
+              background: radial-gradient(ellipse, #fff, #eeeae4);
+            " src="assets/models/earrings.glb" [attr.alt]="item.itemName + ' — interactive 3D preview'" camera-controls
+            touch-action="pan-y" camera-orbit="0deg 85deg auto" environment-image="neutral" shadow-intensity="0.4"
+            exposure="1"></model-viewer>
+          <p class="m-0 px-4 py-3 text-center text-xs text-muted">
+            Drag to rotate · Scroll or pinch to zoom
+          </p>
+        </ng-container>
+      </ng-template>
+
+
+      <ng-template #pinkRingPreview>
+        <ng-container *ngIf="item.itemName === 'Rose Sapphire Gold Ring'; else productPhoto">
+          <model-viewer style="
+              display: block;
+              width: 100%;
+              height: clamp(360px, 65vh, 760px);
+              background: radial-gradient(ellipse, #fff, #eeeae4);
+            " src="assets/models/pink-ring.glb" [attr.alt]="item.itemName + ' — interactive 3D preview'"
+            camera-controls touch-action="pan-y" camera-orbit="15deg 20deg auto" environment-image="neutral"
+            shadow-intensity="0.6" exposure="1"></model-viewer>
+          <p class="m-0 px-4 py-3 text-center text-xs text-muted">
+            Drag to rotate · Scroll or pinch to zoom
+          </p>
+        </ng-container>
+      </ng-template>
+
+      <ng-template #productPhoto>
+        <img class="aspect-[4/4.5] max-h-[760px] w-full object-cover sm:aspect-[5/5] lg:aspect-[4/4.8]"
+          [src]="item.imageUrl || imageFallback" (error)="imageFailed($event)" [alt]="item.itemName" />
+      </ng-template>
+
+      <figcaption
+        class="pointer-events-none absolute top-4 left-4 bg-charcoal/85 px-3 py-2 text-[10px] font-medium uppercase tracking-[0.16em] text-alabaster backdrop-blur-sm sm:top-6 sm:left-6">
+        GemVault / {{ item.category }}
+      </figcaption>
+    </figure>
+
+    <div class="lg:sticky lg:top-28 lg:py-4">
+      <p class="m-0 text-[10px] font-semibold uppercase tracking-[0.24em] text-gold">
+        {{ item.category }} / {{ item.material }}
+      </p>
+      <h1 id="product-title"
+        class="mb-4 mt-3 max-w-[15ch] font-display text-[clamp(42px,4.5vw,72px)] font-normal leading-[1.07] tracking-[-0.035em] text-charcoal dark:text-alabaster">
+        {{ item.itemName }}
+      </h1>
+
+      <div class="mb-7 flex flex-wrap items-center gap-x-3 gap-y-1" [attr.aria-label]="
+          item.ratingCount
+            ? (item.ratingAverage | number: '1.1-1') +
+              ' out of 5 stars from ' +
+              item.ratingCount +
+              ' reviews'
+            : 'No ratings yet'
+        ">
+        <span class="flex gap-0.5 text-[19px] leading-none" aria-hidden="true">
+          <span *ngFor="let star of stars" [ngClass]="
+              star <= roundedRating
+                ? 'text-gold'
+                : 'text-charcoal/20 dark:text-white/25'
+            ">&#9733;</span>
+        </span>
+        <span *ngIf="item.ratingCount" class="text-xs text-muted">{{ item.ratingAverage | number: "1.1-1" }} / 5
+          <span class="mx-1">&middot;</span> {{ item.ratingCount }}
+          {{ item.ratingCount === 1 ? "rating" : "ratings" }}</span>
+        <span *ngIf="!item.ratingCount" class="text-xs text-muted">No ratings yet</span>
+      </div>
+
+      <p class="mb-1 text-[11px] font-semibold uppercase tracking-[0.17em] text-muted">
+        Price
+      </p>
+      <p class="m-0 font-display text-[32px] leading-tight text-charcoal dark:text-alabaster">
+        {{ item.totalPrice | currency: "INR" }}
+      </p>
+      <p class="mb-8 mt-2 text-xs text-muted">Inclusive of applicable taxes</p>
+
+      <div class="border-t border-charcoal/15 pt-7 dark:border-white/20">
+        <h2 class="mb-3 font-display text-[23px] font-normal text-charcoal dark:text-alabaster">
+          The piece
+        </h2>
+        <p class="m-0 max-w-[55ch] text-[14px] leading-7 text-muted">
+          {{ item.description }}
+        </p>
+      </div>
+
+      <p *ngIf="message" class="success mt-6" role="status">{{ message }}</p>
+      <p *ngIf="error" class="error mt-6" role="alert">{{ error }}</p>
+
+      <form *ngIf="item.stockQuantity > 0 && auth.isCustomer()" [formGroup]="form" (ngSubmit)="addToCart()"
+        class="mt-8 border-t border-charcoal/15 pt-7 dark:border-white/20">
+        <div class="flex items-end gap-4">
+          <label class="w-28 shrink-0">Quantity
+            <input type="number" step="1" min="1" [max]="item.stockQuantity" formControlName="quantity" class="!mt-2" />
+          </label>
+          <span class="pb-3 text-xs text-muted">{{ item.stockQuantity }} available</span>
+        </div>
+        <small *ngIf="
+            form.controls.quantity.touched && form.controls.quantity.invalid
+          " class="error-text">Enter a whole number from 1 to {{ item.stockQuantity }}.</small>
+        <button type="submit" class="mt-6 w-full !rounded-[3px]">
+          Add to cart <span class="ml-2">&mdash;</span>
+          {{ item.totalPrice | currency: "INR" }}
+        </button>
+      </form>
+      <a *ngIf="item.stockQuantity > 0 && !auth.isAuthenticated()" routerLink="/login"
+        [queryParams]="{ returnUrl: '/products/' + item.itemId }" class="btn mt-8 flex w-full no-underline">Sign in to
+        add to cart</a>
+      <p *ngIf="item.stockQuantity === 0"
+        class="mt-8 border-t border-charcoal/15 pt-6 text-sm text-muted dark:border-white/20">
+        This piece is currently unavailable.
+      </p>
+      <a *ngIf="auth.isCustomer()" routerLink="/feedback" [queryParams]="{ itemId: item.itemId }"
+        class="mt-5 inline-block text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal underline decoration-gold underline-offset-[6px] transition-colors hover:text-gold dark:text-alabaster">Share
+        your experience</a>
+    </div>
+  </div>
+
+  <section class="mt-16 border-t border-charcoal/20 pt-10 dark:border-white/20" aria-labelledby="try-on-title">
+    <div class="grid gap-8 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-16">
+      <div>
+        <p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
+          A closer look / Virtual try-on
+        </p>
+        <h2 id="try-on-title"
+          class="m-0 font-display text-[clamp(34px,3.5vw,52px)] font-normal leading-tight text-charcoal dark:text-alabaster">
+          See the piece on you.
+        </h2>
+        <p class="mt-4 max-w-[44ch] text-sm leading-7 text-muted">
+          Upload a clear photo of your face and shoulders for earrings or
+          necklaces, or your hand and wrist for rings and bracelets. We'll
+          create a personal preview with this piece.
+        </p>
+        <p class="mt-3 text-xs leading-6 text-muted">
+          AI previews may vary from the actual fit and finish. Your uploaded
+          photo is sent to OpenRouter for generation and is not saved by
+          GemVault.
+        </p>
+        <a *ngIf="!auth.isAuthenticated()" routerLink="/login" [queryParams]="{ returnUrl: '/products/' + item.itemId }"
+          class="mt-5 inline-flex border-b border-gold pb-1 text-xs font-semibold uppercase tracking-[0.12em] text-charcoal no-underline dark:text-alabaster">Sign
+          in to try it on</a>
+        <p *ngIf="auth.isAdmin()" class="mt-5 text-xs text-muted">
+          Personal previews are available to buyer accounts.
+        </p>
+        <div *ngIf="auth.isCustomer()" class="mt-7">
+          <label for="try-on-photo"
+            class="inline-flex cursor-pointer items-center justify-center border border-charcoal/25 px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal transition-colors hover:border-gold hover:text-gold dark:border-white/30 dark:text-alabaster">{{
+            tryOnPhoto ? "Choose another photo" : "Choose your photo"
+            }}</label>
+          <input id="try-on-photo" type="file" accept="image/jpeg,image/png" (change)="onTryOnPhoto($event)"
+            class="!sr-only !min-h-0" />
+          <p *ngIf="tryOnPhoto" class="mt-3 truncate text-xs text-muted">
+            {{ tryOnPhoto.name }}
+          </p>
+          <p *ngIf="tryOnError" class="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">
+            {{ tryOnError }}
+          </p>
+          <a *ngIf="tryOnNeedsLogin" routerLink="/login" [queryParams]="{ returnUrl: '/products/' + item.itemId }"
+            class="mt-4 inline-block border-b border-gold pb-1 text-xs font-semibold uppercase tracking-[0.13em] text-charcoal no-underline dark:text-alabaster">Sign
+            in again</a>
+          <button type="button" (click)="generateTryOn()" [disabled]="!tryOnPhoto || tryOnLoading || tryOnNeedsLogin"
+            class="mt-5 block min-w-[215px] bg-charcoal px-6 py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-alabaster transition-opacity hover:opacity-85 disabled:cursor-not-allowed disabled:opacity-45 dark:bg-alabaster dark:text-charcoal">
+            {{
+            tryOnLoading
+            ? "Creating your preview..."
+            : tryOnResult
+            ? "Create a new preview"
+            : "Create my preview"
+            }}
+          </button>
+          <p class="mt-3 text-xs text-muted">
+            Up to 3 previews per day. Your latest preview is saved to your
+            account.
+          </p>
+        </div>
+      </div>
+
+      <div class="relative grid min-h-[300px] items-center gap-3 bg-taupe/45 p-4 sm:p-6 dark:bg-white/5"
+        [ngClass]="tryOnPreview && tryOnResult ? 'sm:grid-cols-2' : ''">
+        <figure *ngIf="tryOnPreview" class="m-0">
+          <img [src]="tryOnPreview" alt="Your selected photo" class="aspect-[4/5] w-full object-cover" />
+          <figcaption class="mt-2 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted">
+            Your photo
+          </figcaption>
+        </figure>
+        <figure *ngIf="tryOnResult" class="m-0">
+          <img [src]="tryOnResult" [alt]="'Your virtual preview wearing ' + item.itemName"
+            class="aspect-[4/5] w-full object-cover" />
+          <figcaption
+            class="mt-2 flex items-center justify-between gap-3 text-[10px] font-semibold uppercase tracking-[0.15em] text-muted">
+            <span>Your preview</span><span class="flex gap-3"><button type="button" (click)="downloadTryOn()"
+                class="border-b border-gold pb-1 text-charcoal dark:text-alabaster">
+                Download</button><button type="button" (click)="removeTryOn()"
+                class="border-b border-charcoal/30 pb-1 text-muted">
+                Remove
+              </button></span>
+          </figcaption>
+        </figure>
+        <div *ngIf="!tryOnPreview && !tryOnResult" class="py-16 text-center">
+          <span aria-hidden="true" class="font-display text-5xl text-gold">◇</span>
+          <p class="mt-3 text-xs uppercase tracking-[0.16em] text-muted">
+            Your personal preview appears here
+          </p>
+        </div>
+        <div *ngIf="tryOnLoading"
+          class="absolute inset-0 flex flex-col items-center justify-center bg-alabaster/90 backdrop-blur-sm dark:bg-charcoal/90"
+          role="status" aria-live="polite">
+          <span class="h-9 w-9 animate-spin rounded-full border-2 border-gold/25 border-t-gold"></span>
+          <p class="mt-5 text-xs font-semibold uppercase tracking-[0.18em] text-charcoal dark:text-alabaster">
+            Creating your preview
+          </p>
+          <p class="mt-2 text-xs text-muted">This can take a little while.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="mt-16 grid gap-12 border-t border-charcoal/20 pt-10 md:grid-cols-2 md:gap-20 dark:border-white/20"
+    aria-label="Product information">
+    <div>
+      <p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
+        01 / Details
+      </p>
+      <h2 class="mb-6 font-display text-[32px] font-normal text-charcoal dark:text-alabaster">
+        Craft &amp; character
+      </h2>
+      <dl class="m-0 text-sm">
+        <div class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Material</dt>
+          <dd class="m-0 text-right">
+            {{ item.material }} &middot; {{ item.purity }}
+          </dd>
+        </div>
+        <div class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Weight</dt>
+          <dd class="m-0 text-right">{{ item.weightInGrams }} g</dd>
+        </div>
+        <div *ngIf="item.stoneClarity"
+          class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Stone clarity</dt>
+          <dd class="m-0 text-right">{{ item.stoneClarity }}</dd>
+        </div>
+        <div class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Reference</dt>
+          <dd class="m-0 text-right">{{ item.sku }}</dd>
+        </div>
+      </dl>
+    </div>
+    <div *ngIf="item.billing as bill">
+      <p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
+        02 / Pricing
+      </p>
+      <h2 class="mb-6 font-display text-[32px] font-normal text-charcoal dark:text-alabaster">
+        Price details
+      </h2>
+      <dl class="m-0 text-sm">
+        <div class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Metal value</dt>
+          <dd class="m-0 text-right">
+            {{ bill.metalValue | currency: "INR" }}
+          </dd>
+        </div>
+        <div *ngIf="bill.stoneValue"
+          class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Stone value</dt>
+          <dd class="m-0 text-right">
+            {{ bill.stoneValue | currency: "INR" }}
+          </dd>
+        </div>
+        <div class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Making &amp; value addition</dt>
+          <dd class="m-0 text-right">
+            {{ bill.makingCharges + bill.vaCharges | currency: "INR" }}
+          </dd>
+        </div>
+        <div class="flex justify-between gap-5 border-b border-charcoal/10 py-4 dark:border-white/15">
+          <dt class="text-muted">Taxes</dt>
+          <dd class="m-0 text-right">
+            {{ bill.cgstAmount + bill.sgstAmount | currency: "INR" }}
+          </dd>
+        </div>
+        <div class="flex justify-between gap-5 py-4 font-semibold">
+          <dt>Total</dt>
+          <dd class="m-0 text-right">
+            {{ bill.grandTotal | currency: "INR" }}
+          </dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+  <section id="product-reviews" class="mt-16 border-t border-charcoal/20 pt-10 dark:border-white/20"
+    aria-labelledby="product-reviews-title">
+    <div class="grid min-w-0 gap-8 lg:grid-cols-[minmax(0,.8fr)_minmax(0,1.2fr)] lg:gap-16">
+      <div>
+        <p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
+          From our customers
+        </p>
+        <h2 id="product-reviews-title"
+          class="m-0 font-display text-[clamp(32px,3vw,44px)] font-normal leading-tight text-charcoal dark:text-alabaster">
+          Reviews of this piece
+        </h2>
+        <div class="mt-5 flex flex-wrap items-center gap-3">
+          <span class="flex gap-1 text-xl" aria-hidden="true">
+            <span *ngFor="let star of stars" [ngClass]="
+                star <= roundedRating
+                  ? 'text-gold'
+                  : 'text-charcoal/20 dark:text-white/25'
+              ">&#9733;</span>
+          </span>
+          <span class="text-sm text-muted" *ngIf="item.ratingCount">{{ item.ratingAverage | number: "1.1-1" }} / 5
+            &middot;
+            {{ item.ratingCount }}
+            {{ item.ratingCount === 1 ? "rating" : "ratings" }}</span>
+          <span class="text-sm text-muted" *ngIf="!item.ratingCount">No ratings yet</span>
+        </div>
+        <a *ngIf="auth.isCustomer()" routerLink="/feedback" [queryParams]="{ itemId: item.itemId }"
+          class="mt-6 inline-block text-[11px] font-semibold uppercase tracking-[0.14em] text-charcoal underline decoration-gold underline-offset-[6px] transition-colors hover:text-gold dark:text-alabaster">Write
+          a review</a>
+      </div>
+      <div class="min-w-0" aria-live="polite" [attr.aria-busy]="reviewsLoading">
+        <p *ngIf="reviewsLoading" class="py-6 text-sm text-muted" role="status">
+          Loading reviews...
+        </p>
+        <div *ngIf="reviewsError" class="py-6">
+          <p class="text-sm text-muted">{{ reviewsError }}</p>
+          <button type="button" (click)="loadReviews()" class="btn-quiet">
+            Try again
+          </button>
+        </div>
+        <p *ngIf="!reviewsLoading && !reviewsError && !reviews.length"
+          class="m-0 border-y border-charcoal/10 py-8 text-sm leading-7 text-muted dark:border-white/15">
+          No reviews yet. Be the first to share your experience with this piece.
+        </p>
+        <div *ngIf="!reviewsLoading && !reviewsError" class="divide-y divide-charcoal/10 dark:divide-white/15">
+          <article *ngFor="let review of reviews" class="py-6 first:pt-0">
+            <div class="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 class="m-0 !font-sans text-sm font-medium text-charcoal dark:text-alabaster">
+                  {{ review.reviewerName || "GemVault customer" }}
+                </h3>
+                <span class="mt-2 flex gap-0.5 text-base" [attr.aria-label]="
+                    review.rating
+                      ? review.rating + ' out of 5 stars'
+                      : 'Not rated'
+                  ">
+                  <span *ngFor="let star of stars" aria-hidden="true" [ngClass]="
+                      star <= (review.rating || 0)
+                        ? 'text-gold'
+                        : 'text-charcoal/20 dark:text-white/25'
+                    ">&#9733;</span>
+                </span>
+              </div>
+              <time *ngIf="review.date" [attr.datetime]="review.date" class="text-xs text-muted">{{ review.date | date:
+                "d MMM y" }}</time>
+            </div>
+            <p
+              class="mb-0 mt-4 whitespace-pre-wrap break-words text-sm leading-7 text-charcoal/85 dark:text-alabaster/85">
+              {{ review.feedbackText }}
+            </p>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section *ngIf="similarItems.length || similarError"
+    class="mt-16 border-t border-charcoal/20 pt-10 dark:border-white/20" aria-labelledby="similar-pieces-title">
+    <p class="mb-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-gold">
+      Explore the collection
+    </p>
+    <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
+      <h2 id="similar-pieces-title"
+        class="m-0 font-display text-[clamp(32px,3vw,44px)] font-normal leading-tight text-charcoal dark:text-alabaster">
+        Similar pieces
+      </h2>
+      <p class="m-0 text-sm text-muted">
+        More from our {{ item.category | lowercase }} collection.
+      </p>
+    </div>
+    <div *ngIf="similarError" role="status">
+      <p class="text-sm text-muted">{{ similarError }}</p>
+      <button type="button" (click)="loadSimilarItems()" class="btn-quiet">
+        Try again
+      </button>
+    </div>
+    <div class="grid min-w-0 grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
+      <a *ngFor="let similar of similarItems" [routerLink]="['/products', similar.itemId]"
+        class="group block min-w-0 text-charcoal no-underline dark:text-alabaster"
+        [attr.aria-label]="'View ' + similar.itemName">
+        <div class="relative overflow-hidden rounded-[4px] bg-taupe dark:bg-[#29231e]">
+          <img [src]="similar.imageUrl || imageFallback" (error)="imageFailed($event)" [alt]="similar.itemName"
+            loading="lazy"
+            class="aspect-[4/4.5] w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] motion-reduce:transform-none" />
+          <span *ngIf="!similar.stockQuantity"
+            class="absolute bottom-3 left-3 bg-alabaster/95 px-3 py-2 text-[10px] uppercase tracking-widest text-charcoal">Currently
+            unavailable</span>
+        </div>
+        <p class="mb-2 mt-4 text-[10px] font-semibold uppercase tracking-[0.14em] text-muted">
+          {{ similar.category }} / {{ similar.material }}
+        </p>
+        <h3 class="m-0 font-display text-[25px] font-normal leading-tight transition-colors group-hover:text-gold">
+          {{ similar.itemName }}
+        </h3>
+        <div class="mt-3 flex items-center justify-between gap-4 text-sm">
+          <span>{{ similar.totalPrice | currency: "INR" }}</span>
+          <span class="border-b border-gold pb-1 text-[10px] font-semibold uppercase tracking-[0.14em]">View</span>
+        </div>
+      </a>
+    </div>
+  </section>
+</section>
+
+<div *ngIf="!loading && error && !item" class="empty-state py-20 text-center">
+  <h1 class="font-display text-4xl">Piece unavailable</h1>
+  <a [routerLink]="fromWishlist ? '/wishlist' : '/'" class="btn-outline mt-6 no-underline">{{ fromWishlist ? "Back to
+    wishlist" : "Return to collection" }}</a>
+</div>

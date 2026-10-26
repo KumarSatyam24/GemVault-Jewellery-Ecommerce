@@ -1,0 +1,521 @@
+<section
+  class="mx-auto max-w-[1480px] py-8 text-charcoal sm:py-12 dark:text-alabaster"
+  aria-labelledby="dashboard-title"
+  [attr.aria-busy]="loading"
+>
+  <div class="mb-8 flex flex-wrap items-end justify-between gap-6">
+    <div>
+      <p
+        class="mb-2 text-[10px] font-semibold uppercase tracking-[0.22em] text-gold dark:text-[#d9b574]"
+      >
+        GemVault / Overview
+      </p>
+      <h1
+        id="dashboard-title"
+        class="font-display text-4xl tracking-tight sm:text-5xl"
+      >
+        Dashboard
+      </h1>
+      <p class="mt-3 text-sm text-muted">
+        A clear view of your sales, orders and collection.
+      </p>
+    </div>
+    <div class="flex w-full items-center gap-3 sm:w-auto">
+      <div class="relative min-w-0 flex-1 sm:w-48">
+        <select
+          aria-label="Dashboard date range"
+          [(ngModel)]="range"
+          (ngModelChange)="selectRange()"
+          class="!mt-0 !min-h-[44px] h-11 w-full appearance-none rounded border border-charcoal/25 bg-transparent pl-3 pr-9 text-sm focus:border-gold focus:outline-none focus:ring-1 focus:ring-gold dark:border-white/30 dark:[color-scheme:dark]"
+        >
+          <option *ngFor="let option of rangeOptions" [value]="option.value">
+            {{ option.label }}
+          </option>
+        </select>
+      </div>
+      <button
+        type="button"
+        (click)="refresh()"
+        [disabled]="loading"
+        class="flex h-11 items-center gap-2 rounded border border-charcoal/20 px-4 text-xs font-semibold transition hover:border-gold disabled:opacity-50 dark:border-white/25"
+      >
+        <svg
+          class="h-4 w-4"
+          [class.animate-spin]="loading"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          aria-hidden="true"
+        >
+          <path d="M20 7v5h-5M4 17v-5h5" />
+          <path d="M6 7a7 7 0 0 1 12-1l2 6M4 12l2 6a7 7 0 0 0 12-1" />
+        </svg>
+        {{ loading ? "Updating" : "Refresh" }}
+      </button>
+    </div>
+  </div>
+  <form
+    *ngIf="range === 'custom'"
+    (ngSubmit)="applyDates()"
+    class="mb-6 flex flex-wrap items-end gap-4 border-y border-charcoal/10 py-5 dark:border-white/15"
+  >
+    <label class="flex min-w-0 flex-col gap-2 text-xs"
+      >From<input
+        type="date"
+        name="from"
+        [(ngModel)]="draftFrom"
+        [max]="today"
+        required
+        class="min-w-0 rounded border border-charcoal/25 bg-transparent px-3 py-2 dark:border-white/30 dark:[color-scheme:dark]"
+    /></label>
+    <label class="flex min-w-0 flex-col gap-2 text-xs"
+      >To<input
+        type="date"
+        name="to"
+        [(ngModel)]="draftTo"
+        [max]="today"
+        required
+        class="min-w-0 rounded border border-charcoal/25 bg-transparent px-3 py-2 dark:border-white/30 dark:[color-scheme:dark]"
+    /></label>
+    <button
+      type="submit"
+      class="rounded bg-charcoal px-5 py-3 text-xs font-semibold text-alabaster dark:bg-alabaster dark:text-charcoal"
+    >
+      Apply dates
+    </button>
+    <p
+      *ngIf="validationError"
+      role="alert"
+      class="w-full text-sm text-red-700 dark:text-red-300"
+    >
+      {{ validationError }}
+    </p>
+  </form>
+  <div
+    *ngIf="error"
+    role="alert"
+    class="mb-6 flex flex-wrap items-center justify-between gap-3 rounded border border-red-500/25 bg-red-500/5 p-4 text-sm text-red-800 dark:text-red-200"
+  >
+    <span
+      >{{ error }}
+      {{ data ? "The last loaded figures are still shown below." : "" }}</span
+    ><button
+      type="button"
+      (click)="refresh()"
+      class="underline underline-offset-4"
+    >
+      Try again
+    </button>
+  </div>
+  <div
+    *ngIf="!data && loading"
+    role="status"
+    class="py-20 text-center text-sm text-muted"
+  >
+    <span
+      class="mb-4 inline-block h-6 w-6 animate-spin rounded-full border-2 border-gold/20 border-t-gold motion-reduce:animate-none"
+    ></span>
+    <p>Preparing your overview…</p>
+  </div>
+  <ng-container *ngIf="data as overview">
+    <div
+      class="mb-4 flex flex-wrap items-center justify-between gap-2 text-xs text-muted"
+    >
+      <span
+        >{{ overview.from | date: "d MMM y" }} —
+        {{ overview.to | date: "d MMM y" }}</span
+      ><span>Updated {{ overview.generatedAt | date: "d MMM, h:mm a" }}</span>
+    </div>
+    <div
+      class="grid grid-cols-2 border-y border-charcoal/15 lg:grid-cols-4 dark:border-white/20"
+    >
+      <div
+        class="border-b border-r border-charcoal/10 py-6 pr-4 lg:border-b-0 dark:border-white/15"
+      >
+        <p
+          class="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted"
+        >
+          Net sales
+        </p>
+        <p class="mt-3 break-words font-display text-2xl sm:text-4xl">
+          {{ overview.summary.netSales | currency: "INR" : "symbol" : "1.0-2" }}
+        </p>
+        <p class="mt-3 text-xs leading-5 text-muted">
+          {{
+            comparison(
+              overview.summary.netSales,
+              overview.summary.previousNetSales
+            )
+          }}
+        </p>
+      </div>
+      <div
+        class="border-b border-charcoal/10 px-4 py-6 lg:border-b-0 lg:border-r sm:px-6 dark:border-white/15"
+      >
+        <p
+          class="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted"
+        >
+          Product orders
+        </p>
+        <p class="mt-3 font-display text-2xl sm:text-4xl">
+          {{ overview.summary.orders | number }}
+        </p>
+        <p class="mt-3 text-xs leading-5 text-muted">
+          {{
+            comparison(overview.summary.orders, overview.summary.previousOrders)
+          }}
+        </p>
+      </div>
+      <div
+        class="border-r border-charcoal/10 py-6 pr-4 lg:px-6 dark:border-white/15"
+      >
+        <p
+          class="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted"
+        >
+          Pieces sold
+        </p>
+        <p class="mt-3 font-display text-2xl sm:text-4xl">
+          {{ overview.summary.unitsSold | number }}
+        </p>
+        <p class="mt-3 text-xs leading-5 text-muted">
+          Across {{ overview.summary.retainedOrders }} retained orders
+        </p>
+      </div>
+      <div class="px-4 py-6 sm:px-6">
+        <p
+          class="text-[10px] font-semibold uppercase tracking-[0.15em] text-muted"
+        >
+          Average order value
+        </p>
+        <p class="mt-3 break-words font-display text-2xl sm:text-4xl">
+          {{
+            overview.summary.averageOrderValue
+              | currency: "INR" : "symbol" : "1.0-2"
+          }}
+        </p>
+        <p class="mt-3 text-xs leading-5 text-muted">
+          Per retained product order
+        </p>
+      </div>
+    </div>
+    <p class="mb-8 mt-3 text-xs leading-5 text-muted">
+      Compared with {{ overview.previousFrom | date: "d MMM y" }} —
+      {{ overview.previousTo | date: "d MMM y" }}. Sales exclude unpaid,
+      cancelled and rejected orders.
+    </p>
+    <div class="grid min-w-0 gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]">
+      <section
+        class="min-w-0 rounded-lg border border-charcoal/15 bg-white/40 p-5 sm:p-7 dark:border-white/15 dark:bg-white/[0.025]"
+        aria-labelledby="trend-title"
+      >
+        <div class="mb-6 flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h2 id="trend-title" class="font-display text-2xl">
+              Sales &amp; activity
+            </h2>
+            <p class="mt-1 text-xs text-muted">
+              {{ overview.granularity === "month" ? "Monthly" : "Daily" }}
+              activity in the selected period
+            </p>
+          </div>
+          <div
+            class="flex rounded border border-charcoal/20 p-1 text-xs dark:border-white/25"
+          >
+            <button
+              type="button"
+              (click)="metric = 'sales'"
+              [attr.aria-pressed]="metric === 'sales'"
+              [ngClass]="
+                metric === 'sales'
+                  ? 'bg-charcoal text-alabaster dark:bg-alabaster dark:text-charcoal'
+                  : ''
+              "
+              class="rounded-sm px-3 py-1.5"
+            >
+              Sales</button
+            ><button
+              type="button"
+              (click)="metric = 'orders'"
+              [attr.aria-pressed]="metric === 'orders'"
+              [ngClass]="
+                metric === 'orders'
+                  ? 'bg-charcoal text-alabaster dark:bg-alabaster dark:text-charcoal'
+                  : ''
+              "
+              class="rounded-sm px-3 py-1.5"
+            >
+              Orders
+            </button>
+          </div>
+        </div>
+        <div class="h-[260px] sm:h-[310px]">
+          <app-dashboard-chart
+            type="line"
+            [labels]="trendLabels"
+            [values]="metric === 'sales' ? trendSales : trendOrders"
+            [currency]="metric === 'sales'"
+            [label]="metric === 'sales' ? 'Net sales in INR' : 'Product orders'"
+          ></app-dashboard-chart>
+        </div>
+        <p *ngIf="!overview.summary.orders" class="mt-3 text-xs text-muted">
+          No orders in this period. Try a longer date range.
+        </p>
+      </section>
+      <section
+        class="min-w-0 rounded-lg border border-charcoal/15 p-5 sm:p-7 dark:border-white/15"
+        aria-labelledby="status-title"
+      >
+        <h2 id="status-title" class="font-display text-2xl">Order status</h2>
+        <p class="mt-1 text-xs text-muted">
+          Current status of orders placed in this period
+        </p>
+        <div
+          *ngIf="overview.summary.orders; else noOrders"
+          class="relative mx-auto my-5 h-44 max-w-[240px]"
+        >
+          <app-dashboard-chart
+            type="doughnut"
+            [labels]="statusLabels"
+            [values]="statusValues"
+            [colors]="statusPalette"
+            label="Orders by status"
+          ></app-dashboard-chart>
+          <div
+            class="pointer-events-none absolute inset-0 flex flex-col items-center justify-center"
+          >
+            <span class="font-display text-3xl">{{
+              overview.summary.orders
+            }}</span
+            ><span class="text-[10px] uppercase tracking-widest text-muted"
+              >Orders</span
+            >
+          </div>
+        </div>
+        <ng-template #noOrders
+          ><p class="py-16 text-center text-sm text-muted">
+            No orders to display yet.
+          </p></ng-template
+        >
+        <ul class="space-y-2 text-xs">
+          <ng-container *ngFor="let status of overview.statuses"
+            ><li
+              *ngIf="status.count"
+              class="flex items-center justify-between gap-3"
+            >
+              <span class="flex items-center gap-2"
+                ><span
+                  class="h-2 w-2 rounded-full"
+                  [style.backgroundColor]="
+                    statusColors[status.status] || '#96918b'
+                  "
+                ></span
+                >{{ statusName(status.status) }}</span
+              ><span class="tabular-nums">{{ status.count }}</span>
+            </li></ng-container
+          >
+        </ul>
+      </section>
+      <section
+        class="min-w-0 rounded-lg border border-charcoal/15 p-5 sm:p-7 dark:border-white/15"
+        aria-labelledby="category-title"
+      >
+        <h2 id="category-title" class="font-display text-2xl">
+          Sales by category
+        </h2>
+        <p class="mt-1 text-xs text-muted">
+          Where your retained sales come from
+        </p>
+        <div *ngIf="categoryValues.length; else noSales" class="mt-6 h-60">
+          <app-dashboard-chart
+            type="bar"
+            [horizontal]="true"
+            [labels]="categoryLabels"
+            [values]="categoryValues"
+            [currency]="true"
+            label="Category sales in INR"
+          ></app-dashboard-chart>
+        </div>
+        <ng-template #noSales
+          ><p class="py-20 text-center text-sm text-muted">
+            No retained sales in this period.
+          </p></ng-template
+        >
+      </section>
+      <section
+        class="min-w-0 rounded-lg border border-charcoal/15 p-5 sm:p-7 dark:border-white/15"
+        aria-labelledby="top-title"
+      >
+        <h2 id="top-title" class="font-display text-2xl">
+          Best-selling pieces
+        </h2>
+        <p class="mt-1 text-xs text-muted">Ranked by quantity sold</p>
+        <ol class="mt-5 divide-y divide-charcoal/10 dark:divide-white/15">
+          <li
+            *ngFor="let piece of overview.topPieces; let i = index"
+            class="flex items-start gap-3 py-4"
+          >
+            <span class="pt-1 text-xs text-gold">{{
+              i + 1 | number: "2.0-0"
+            }}</span>
+            <div class="min-w-0 flex-1">
+              <a
+                [routerLink]="['/products', piece.itemId]"
+                class="text-sm leading-5 hover:text-gold"
+                >{{ piece.itemName }}</a
+              >
+              <p class="mt-1 text-xs text-muted">
+                {{ piece.units }}
+                {{ piece.units === 1 ? "piece" : "pieces" }} sold
+              </p>
+            </div>
+            <span class="whitespace-nowrap pt-1 text-xs tabular-nums">{{
+              piece.sales | currency: "INR" : "symbol" : "1.0-0"
+            }}</span>
+          </li>
+        </ol>
+        <p
+          *ngIf="!overview.topPieces.length"
+          class="py-16 text-center text-sm text-muted"
+        >
+          Your best sellers will appear after a sale.
+        </p>
+      </section>
+      <section
+        class="min-w-0 rounded-lg border border-charcoal/15 dark:border-white/15"
+        aria-labelledby="recent-title"
+      >
+        <div class="flex items-center justify-between gap-3 p-5 sm:p-7">
+          <h2 id="recent-title" class="font-display text-2xl">Recent orders</h2>
+          <a
+            routerLink="/admin/orders"
+            class="text-xs underline decoration-gold underline-offset-4 hover:text-gold"
+            >View all</a
+          >
+        </div>
+        <div class="overflow-x-auto">
+          <table
+            *ngIf="overview.recentOrders.length"
+            class="w-full min-w-[570px] text-left text-xs"
+          >
+            <thead
+              class="bg-taupe/30 text-[10px] uppercase tracking-widest text-muted dark:bg-white/5"
+            >
+              <tr>
+                <th class="px-5 py-3 font-medium">Order / piece</th>
+                <th class="px-3 py-3 font-medium">Buyer</th>
+                <th class="px-3 py-3 font-medium">Status</th>
+                <th class="px-5 py-3 text-right font-medium">Total</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-charcoal/10 dark:divide-white/10">
+              <tr *ngFor="let order of overview.recentOrders">
+                <td class="max-w-[240px] px-5 py-4">
+                  <p class="mb-1 text-muted">
+                    #{{ order.orderId }} · {{ order.date | date: "d MMM" }}
+                  </p>
+                  <span>{{ order.itemName }}</span
+                  ><span class="ml-1 text-muted">× {{ order.quantity }}</span>
+                </td>
+                <td class="px-3 py-4">{{ order.buyerName }}</td>
+                <td class="px-3 py-4">
+                  <span>{{ statusName(order.status) }}</span>
+                  <p
+                    *ngIf="order.paymentStatus"
+                    class="mt-1 text-[10px] text-muted"
+                  >
+                    {{ order.paymentStatus }}
+                  </p>
+                </td>
+                <td class="whitespace-nowrap px-5 py-4 text-right tabular-nums">
+                  {{ order.total | currency: "INR" : "symbol" : "1.0-2" }}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p
+          *ngIf="!overview.recentOrders.length"
+          class="px-5 pb-12 pt-6 text-sm text-muted"
+        >
+          No orders in the selected period.
+        </p>
+      </section>
+      <section
+        class="min-w-0 rounded-lg border border-gold/30 bg-taupe/20 p-5 sm:p-7 dark:bg-white/[0.025]"
+        aria-labelledby="stock-title"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <div>
+            <h2 id="stock-title" class="font-display text-2xl">Stock watch</h2>
+            <p class="mt-1 text-xs text-muted">
+              Live inventory · all active pieces
+            </p>
+          </div>
+          <span
+            class="rounded-full border border-gold/30 px-2.5 py-1 text-xs"
+            >{{ overview.summary.lowStockCount }}</span
+          >
+        </div>
+        <p class="mt-5 text-xs text-muted">
+          {{ overview.summary.outOfStockCount }} out of stock ·
+          {{ overview.summary.activePieces }} active pieces
+        </p>
+        <p *ngIf="stockLoading" role="status" class="mt-4 text-xs text-muted">Updating stock watch...</p>
+        <p *ngIf="stockError" role="alert" class="mt-4 text-xs text-red-700 dark:text-red-300">{{ stockError }}</p>
+        <ul class="mt-2 divide-y divide-charcoal/10 dark:divide-white/15">
+          <li
+            *ngFor="let piece of visibleStockAlerts"
+            class="flex items-center justify-between gap-3 py-3"
+          >
+            <div class="min-w-0">
+              <p class="text-sm">{{ piece.itemName }}</p>
+              <p class="mt-1 text-[10px] text-muted">
+                Reorder at {{ piece.threshold }} · {{ piece.sku }}
+              </p>
+            </div>
+            <span
+              class="whitespace-nowrap text-xs font-semibold"
+              [ngClass]="
+                piece.stock === 0
+                  ? 'text-red-700 dark:text-red-300'
+                  : 'text-gold dark:text-[#d9b574]'
+              "
+              >{{
+                piece.stock === 0 ? "Sold out" : piece.stock + " left"
+              }}</span
+            >
+          </li>
+        </ul>
+        <nav *ngIf="stockAlerts.length > stockPageSize" aria-label="Stock watch pagination" class="mt-3 flex flex-wrap items-center justify-between gap-3 border-t border-charcoal/10 pt-4 text-xs dark:border-white/15">
+          <button type="button" (click)="stockPage = stockPage - 1" [disabled]="stockPage === 1" class="rounded border border-charcoal/20 px-3 py-2 hover:border-gold disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/25">Previous</button>
+          <span aria-live="polite" class="text-muted">Page {{ stockPage }} of {{ stockPageCount }} &middot; {{ stockAlerts.length }} pieces</span>
+          <button type="button" (click)="stockPage = stockPage + 1" [disabled]="stockPage === stockPageCount" class="rounded border border-charcoal/20 px-3 py-2 hover:border-gold disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/25">Next</button>
+        </nav>
+        <p *ngIf="!stockAlerts.length && !stockLoading && !stockError" class="py-7 text-sm text-muted">
+          {{
+            overview.summary.activePieces
+              ? "All active pieces are above their reorder level."
+              : "Add pieces to start tracking stock."
+          }}
+        </p>
+        <a
+          routerLink="/admin/restock"
+          class="mt-4 inline-block text-xs underline decoration-gold underline-offset-4 hover:text-gold"
+          >Manage restocking →</a
+        >
+      </section>
+    </div>
+    <div
+      class="mt-6 flex flex-wrap justify-between gap-4 border-b border-charcoal/15 pb-6 text-xs text-muted dark:border-white/20"
+    >
+      <span
+        >{{ overview.summary.buyers | number }} registered buyers ·
+        {{ overview.summary.stockUnits | number }} units in stock</span
+      ><span *ngIf="overview.summary.refundsInitiated"
+        >Refunds initiated in this period:
+        {{ overview.summary.refundsInitiated | currency: "INR" }}</span
+      >
+    </div>
+  </ng-container>
+</section>

@@ -1,0 +1,515 @@
+<section
+  class="admin-heading grid min-w-0 gap-6 pb-3 pt-4 min-[1280px]:grid-cols-[minmax(0,1fr)_auto] min-[1280px]:items-end"
+>
+  <div class="min-w-0">
+    <p class="eyebrow">Collection management</p>
+    <h1 class="page-heading">Jewellery</h1>
+    <p class="page-intro !mb-0">
+      Manage the pieces buyers see. Archive a booked piece to preserve its order
+      history.
+    </p>
+  </div>
+  <div
+    class="flex min-w-0 flex-wrap items-center gap-3 min-[1280px]:justify-end"
+  >
+    <button
+      class="shrink-0 border border-charcoal bg-charcoal px-6 py-3 text-[11px] font-semibold uppercase tracking-widest text-alabaster"
+      type="button"
+      (click)="formOpen = !formOpen; editingId ? reset() : null"
+    >
+      {{ formOpen ? "Close form" : "Add a piece" }}
+    </button>
+    <button
+      type="button"
+      class="btn-outline !min-h-0 !px-4 !py-3"
+      (click)="downloadExport()"
+    >
+      Export CSV
+    </button>
+    <button
+      type="button"
+      class="btn-outline !min-h-0 !px-4 !py-3"
+      (click)="downloadTemplate()"
+    >
+      Example CSV</button
+    ><label
+      class="inline-flex cursor-pointer items-center border border-charcoal bg-charcoal px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-alabaster"
+      ><input
+        class="!sr-only !min-h-0"
+        type="file"
+        accept=".csv,text/csv"
+        (change)="csvSelected($event)"
+      />
+      {{ importing ? "Importing…" : "Import CSV" }}</label
+    >
+  </div>
+</section>
+<p class="error" *ngIf="error" role="alert">{{ error }}</p>
+<p class="success" *ngIf="message" role="status">{{ message }}</p>
+<div
+  class="summary-line flex flex-wrap gap-7 border-y border-charcoal/20 py-6 text-xs text-muted dark:border-white/20"
+>
+  <span
+    ><strong
+      class="mr-2 text-lg font-medium text-charcoal dark:text-alabaster"
+      >{{ items.length }}</strong
+    >
+    total pieces</span
+  ><span
+    ><strong
+      class="mr-2 text-lg font-medium text-charcoal dark:text-alabaster"
+      >{{ activeCount }}</strong
+    >
+    active</span
+  ><span
+    ><strong
+      class="mr-2 text-lg font-medium text-charcoal dark:text-alabaster"
+      >{{ lowStockCount }}</strong
+    >
+    need attention</span
+  >
+</div>
+<section
+  class="inventory-form my-9 rounded-2xl border border-charcoal/10 bg-taupe/60 p-8 max-[600px]:p-5 dark:border-white/15 dark:bg-[#27221e]"
+  *ngIf="formOpen"
+  aria-labelledby="item-form-heading"
+>
+  <div class="form-heading">
+    <p class="eyebrow">Collection record</p>
+    <h2 id="item-form-heading" class="mb-2 mt-2 font-display text-3xl">
+      {{ editingId ? "Edit piece" : "Add a piece" }}
+    </h2>
+    <p class="mb-8 text-[13px] leading-6 text-muted">
+      Add the details buyers need to choose this piece.
+    </p>
+  </div>
+  <form class="space-y-6" [formGroup]="form" (ngSubmit)="save()">
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Item name
+        <input
+          class="!rounded-lg"
+          formControlName="itemName"
+          required
+          placeholder="Name of the piece"
+        /><small class="error-text" *ngIf="invalid('itemName')"
+          >Name is required.</small
+        ></label
+      ><label
+        >SKU
+        <input
+          class="!rounded-lg"
+          formControlName="sku"
+          maxlength="40"
+          placeholder="Leave blank to generate"
+        /><small
+          class="error-text"
+          *ngIf="form.controls.sku.touched && form.controls.sku.invalid"
+          >Use 3 to 40 letters, numbers or hyphens.</small
+        ></label
+      >
+    </div>
+    <label
+      >Description
+      <textarea
+        class="min-h-[105px] !rounded-lg"
+        formControlName="description"
+        required
+        maxlength="2000"
+        placeholder="Describe materials and character"
+      ></textarea>
+    </label>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Image URL
+        <input
+          class="!rounded-lg"
+          type="url"
+          formControlName="imageUrl"
+          (input)="selectedFileName = ''"
+          required
+          placeholder="https://example.com/piece.jpg"
+        /><small class="field-hint"
+          >Paste a direct image URL, or upload an image below.</small
+        ><small class="error-text" *ngIf="invalid('imageUrl')"
+          >Paste a valid image URL or upload a JPG, PNG, or WebP image.</small
+        ></label
+      >
+      <div>
+        <span class="block text-xs font-semibold uppercase tracking-[0.11em]"
+          >Upload image</span
+        >
+        <input
+          id="piece-upload"
+          class="!sr-only !min-h-0"
+          type="file"
+          accept="image/jpeg,image/png,image/webp"
+          (change)="imageSelected($event)"
+        />
+        <label
+          for="piece-upload"
+          class="mt-2 inline-flex min-h-[46px] cursor-pointer items-center rounded-lg border border-charcoal/30 bg-alabaster px-4 text-xs font-semibold uppercase tracking-[0.1em] transition-colors hover:border-gold dark:border-white/30 dark:bg-[#24201d]"
+          >Choose image</label
+        >
+        <span
+          class="ml-3 text-xs normal-case tracking-normal text-muted"
+          *ngIf="selectedFileName"
+          >{{ selectedFileName }}</span
+        >
+        <small class="field-hint"
+          >JPG, PNG, or WebP up to 2 MB. Saved with this piece.</small
+        >
+      </div>
+    </div>
+    <div
+      class="mt-4 flex items-start gap-4 border border-charcoal/15 p-3 dark:border-white/20"
+      *ngIf="form.controls.imageUrl.value"
+    >
+      <img
+        class="h-20 w-20 rounded-lg object-cover"
+        [src]="form.controls.imageUrl.value"
+        (error)="imageFailed($event)"
+        alt="Product image preview"
+      />
+      <div class="min-w-0">
+        <p class="m-0 text-xs text-muted">Image preview</p>
+        <button class="btn-quiet mt-1" type="button" (click)="clearImage()">
+          Remove image
+        </button>
+      </div>
+    </div>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Category
+        <app-dropdown
+          class="mt-2 block"
+          formControlName="category"
+          [options]="categoryOptions"
+          label="Category"
+        ></app-dropdown></label
+      ><label
+        >Material
+        <app-dropdown
+          class="mt-2 block"
+          formControlName="material"
+          [options]="materialOptions"
+          label="Material"
+        ></app-dropdown
+      ></label>
+    </div>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Purity
+        <app-dropdown
+          class="mt-2 block"
+          formControlName="purity"
+          [options]="purityOptions"
+          label="Purity"
+        ></app-dropdown></label
+      ><label
+        >Weight (g)
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0.01"
+          formControlName="weightInGrams"
+      /></label>
+    </div>
+    <div
+      class="row gap-x-5 gap-y-6"
+      *ngIf="
+        form.controls.material.value === 'Diamond' ||
+        form.controls.stoneWeightInGrams.value
+      "
+    >
+      <label
+        >Diamond clarity
+        <app-dropdown
+          class="mt-2 block"
+          formControlName="stoneClarity"
+          [options]="clarityOptions"
+          label="Diamond clarity"
+        ></app-dropdown
+      ></label>
+      <p class="mt-8 text-xs leading-6 text-muted">
+        Clarity is optional for a diamond or gemstone piece.
+      </p>
+    </div>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Stone weight (g)
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="stoneWeightInGrams"
+      /></label>
+      <label
+        >Stone / diamond value
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="stoneValue"
+      /></label>
+    </div>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Price per gram
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="pricePerGram"
+        /><button class="btn-quiet mt-2" type="button" (click)="useLiveRate()">
+          Use live {{ form.controls.material.value || "metal" }} rate
+        </button></label
+      ><label
+        >Making charges
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="makingCharges"
+      /></label>
+    </div>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >VA / value-addition charges
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="vaCharges"
+      /></label>
+      <label
+        >Discount
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="discountAmount"
+      /></label>
+    </div>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >CGST (%)
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="cgstRate"
+      /></label>
+      <label
+        >SGST (%)
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          min="0"
+          formControlName="sgstRate"
+      /></label>
+    </div>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Round off
+        <input
+          class="!rounded-lg"
+          type="number"
+          step="0.01"
+          formControlName="roundOff"
+      /></label>
+      <p class="mt-8 text-xs leading-6 text-muted">
+        Metal value is calculated from net metal weight (gross weight minus
+        stone weight). Taxes apply after discount.
+      </p>
+    </div>
+    <aside
+      class="rounded-xl border border-charcoal/15 bg-alabaster/70 p-5 text-xs dark:border-white/20 dark:bg-[#24201d]"
+    >
+      <p class="eyebrow mb-3">Live billing preview</p>
+      <div class="grid grid-cols-2 gap-x-8 gap-y-3 max-[520px]:grid-cols-1">
+        <span class="text-muted"
+          >Net metal weight
+          <strong class="float-right text-charcoal dark:text-alabaster"
+            >{{ billingPreview.netWeight | number: "1.2-2" }} g</strong
+          ></span
+        >
+        <span class="text-muted"
+          >Metal value
+          <strong class="float-right text-charcoal dark:text-alabaster">{{
+            billingPreview.metalValue | currency: "INR"
+          }}</strong></span
+        >
+        <span class="text-muted"
+          >Taxable amount
+          <strong class="float-right text-charcoal dark:text-alabaster">{{
+            billingPreview.taxable | currency: "INR"
+          }}</strong></span
+        >
+        <span class="text-muted"
+          >CGST + SGST
+          <strong class="float-right text-charcoal dark:text-alabaster">{{
+            billingPreview.cgst + billingPreview.sgst | currency: "INR"
+          }}</strong></span
+        >
+      </div>
+      <p
+        class="mt-4 border-t border-charcoal/10 pt-4 text-sm font-semibold dark:border-white/20"
+      >
+        Grand total
+        <strong class="float-right">{{
+          billingPreview.total | currency: "INR"
+        }}</strong>
+      </p>
+    </aside>
+    <div class="row gap-x-5 gap-y-6">
+      <label
+        >Stock
+        <input
+          class="!rounded-lg"
+          type="number"
+          min="0"
+          formControlName="stockQuantity" /></label
+      ><label
+        >Reorder threshold
+        <input
+          class="!rounded-lg"
+          type="number"
+          min="0"
+          formControlName="reorderThreshold"
+      /></label>
+    </div>
+    <small class="error-text" *ngIf="form.touched && form.invalid"
+      >Complete required fields with valid values.</small
+    >
+    <div
+      class="form-actions !mt-2 border-t border-charcoal/10 pt-6 dark:border-white/15"
+    >
+      <button class="!rounded-lg" type="submit" [disabled]="saving">
+        {{
+          saving
+            ? editingId
+              ? "Updating..."
+              : "Saving..."
+            : editingId
+              ? "Update piece"
+              : "Save piece"
+        }}</button
+      ><button type="button" class="btn-outline" (click)="reset()">
+        Cancel
+      </button>
+    </div>
+  </form>
+</section>
+<section class="inventory-list mt-11" aria-labelledby="inventory-list-heading">
+  <div class="list-heading flex items-baseline justify-between gap-4">
+    <h2 id="inventory-list-heading" class="mb-5 mt-2 font-display text-3xl">
+      All pieces
+    </h2>
+    <span class="text-[11px] uppercase tracking-widest text-muted"
+      >{{ items.length }} records</span
+    >
+  </div>
+  <p class="muted" *ngIf="loading">Loading jewellery...</p>
+  <div
+    class="table-wrap max-[700px]:!overflow-visible max-[700px]:!border-0"
+    *ngIf="!loading && items.length"
+  >
+    <table class="max-[700px]:!block max-[700px]:!w-full max-[700px]:!min-w-0">
+      <thead class="max-[700px]:hidden">
+        <tr>
+          <th>Piece</th>
+          <th>SKU</th>
+          <th>Category</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody
+        class="max-[700px]:!block max-[700px]:!w-full max-[700px]:!min-w-0"
+      >
+        <tr
+          class="max-[700px]:mb-4 max-[700px]:block max-[700px]:rounded-[14px] max-[700px]:border max-[700px]:border-[rgba(120,105,85,.3)] max-[700px]:p-[14px]"
+          *ngFor="let item of items"
+        >
+          <td
+            class="max-[700px]:!flex max-[700px]:!w-full max-[700px]:justify-between max-[700px]:gap-[15px] max-[700px]:!overflow-visible max-[700px]:!border-0 max-[700px]:!px-0 max-[700px]:!py-[9px] max-[700px]:text-right max-[700px]:!whitespace-normal max-[700px]:[overflow-wrap:anywhere] max-[700px]:before:w-[78px] max-[700px]:before:shrink-0 max-[700px]:before:text-left max-[700px]:before:text-[10px] max-[700px]:before:font-bold max-[700px]:before:uppercase max-[700px]:before:tracking-[.08em] max-[700px]:before:opacity-70 max-[700px]:before:content-[attr(data-label)]"
+            data-label="Piece"
+          >
+            <strong>{{ item.itemName }}</strong>
+          </td>
+          <td
+            class="max-[700px]:!flex max-[700px]:!w-full max-[700px]:justify-between max-[700px]:gap-[15px] max-[700px]:!border-0 max-[700px]:!px-0 max-[700px]:!py-[9px] max-[700px]:text-right max-[700px]:!whitespace-normal max-[700px]:[overflow-wrap:anywhere] max-[700px]:before:w-[78px] max-[700px]:before:shrink-0 max-[700px]:before:text-left max-[700px]:before:text-[10px] max-[700px]:before:font-bold max-[700px]:before:uppercase max-[700px]:before:tracking-[.08em] max-[700px]:before:opacity-70 max-[700px]:before:content-[attr(data-label)]"
+            data-label="SKU"
+          >
+            {{ item.sku }}
+          </td>
+          <td
+            class="max-[700px]:!flex max-[700px]:!w-full max-[700px]:justify-between max-[700px]:gap-[15px] max-[700px]:!border-0 max-[700px]:!px-0 max-[700px]:!py-[9px] max-[700px]:text-right max-[700px]:!whitespace-normal max-[700px]:[overflow-wrap:anywhere] max-[700px]:before:w-[78px] max-[700px]:before:shrink-0 max-[700px]:before:text-left max-[700px]:before:text-[10px] max-[700px]:before:font-bold max-[700px]:before:uppercase max-[700px]:before:tracking-[.08em] max-[700px]:before:opacity-70 max-[700px]:before:content-[attr(data-label)]"
+            data-label="Category"
+          >
+            {{ item.category }} / {{ item.material }}
+          </td>
+          <td
+            class="max-[700px]:!flex max-[700px]:!w-full max-[700px]:justify-between max-[700px]:gap-[15px] max-[700px]:!border-0 max-[700px]:!px-0 max-[700px]:!py-[9px] max-[700px]:text-right max-[700px]:!whitespace-normal max-[700px]:[overflow-wrap:anywhere] max-[700px]:before:w-[78px] max-[700px]:before:shrink-0 max-[700px]:before:text-left max-[700px]:before:text-[10px] max-[700px]:before:font-bold max-[700px]:before:uppercase max-[700px]:before:tracking-[.08em] max-[700px]:before:opacity-70 max-[700px]:before:content-[attr(data-label)]"
+            data-label="Price"
+          >
+            {{ item.totalPrice | currency: "INR" }}
+          </td>
+          <td
+            class="max-[700px]:!flex max-[700px]:!w-full max-[700px]:justify-between max-[700px]:gap-[15px] max-[700px]:!border-0 max-[700px]:!px-0 max-[700px]:!py-[9px] max-[700px]:text-right max-[700px]:!whitespace-normal max-[700px]:[overflow-wrap:anywhere] max-[700px]:before:w-[78px] max-[700px]:before:shrink-0 max-[700px]:before:text-left max-[700px]:before:text-[10px] max-[700px]:before:font-bold max-[700px]:before:uppercase max-[700px]:before:tracking-[.08em] max-[700px]:before:opacity-70 max-[700px]:before:content-[attr(data-label)]"
+            data-label="Stock"
+          >
+            {{ item.stockQuantity }}
+            <small
+              class="ml-1 text-[10px] text-[#a33a31]"
+              *ngIf="item.stockQuantity <= item.reorderThreshold"
+              >Low</small
+            >
+          </td>
+          <td
+            class="max-[700px]:!flex max-[700px]:!w-full max-[700px]:justify-between max-[700px]:gap-[15px] max-[700px]:!border-0 max-[700px]:!px-0 max-[700px]:!py-[9px] max-[700px]:text-right max-[700px]:!whitespace-normal max-[700px]:[overflow-wrap:anywhere] max-[700px]:before:w-[78px] max-[700px]:before:shrink-0 max-[700px]:before:text-left max-[700px]:before:text-[10px] max-[700px]:before:font-bold max-[700px]:before:uppercase max-[700px]:before:tracking-[.08em] max-[700px]:before:opacity-70 max-[700px]:before:content-[attr(data-label)]"
+            data-label="Status"
+          >
+            <span
+              class="record-status border-l-2 border-gold pl-2 text-[11px] uppercase [&.archived]:border-muted [&.archived]:text-muted"
+              [class.archived]="item.active === false"
+              >{{ item.active === false ? "Archived" : "Active" }}</span
+            >
+          </td>
+          <td
+            data-label="Actions"
+            class="record-actions whitespace-nowrap [&_button]:mr-2 max-[700px]:!flex max-[700px]:!w-full max-[700px]:flex-wrap max-[700px]:justify-end max-[700px]:gap-[15px] max-[700px]:!border-0 max-[700px]:!px-0 max-[700px]:!py-[9px] max-[700px]:text-right max-[700px]:!whitespace-normal max-[700px]:[overflow-wrap:anywhere] max-[700px]:before:w-[78px] max-[700px]:before:shrink-0 max-[700px]:before:text-left max-[700px]:before:text-[10px] max-[700px]:before:font-bold max-[700px]:before:uppercase max-[700px]:before:tracking-[.08em] max-[700px]:before:opacity-70 max-[700px]:before:content-[attr(data-label)] max-[700px]:[&_button]:!px-1 max-[700px]:[&_button]:!py-[6px]"
+          >
+            <button type="button" class="btn-quiet" (click)="edit(item)">
+              Edit</button
+            ><button
+              type="button"
+              class="btn-quiet"
+              (click)="setArchived(item, item.active !== false)"
+            >
+              {{ item.active === false ? "Restore" : "Archive" }}</button
+            ><button type="button" class="btn-quiet" (click)="remove(item)">
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="empty-state" *ngIf="!loading && !items.length && !error">
+    <h3>No pieces yet</h3>
+    <p class="muted">Add the first piece to start your collection.</p>
+  </div>
+</section>

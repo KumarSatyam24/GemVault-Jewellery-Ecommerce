@@ -1,0 +1,2040 @@
+openapi: 3.0.1
+info:
+  title: GemVault API
+  description:
+    GemVault backend API. Protected endpoints require a JWT bearer token;
+    public catalogue and authentication endpoints accept unauthenticated requests.
+  version: 1.0.0
+servers:
+  - url: /
+    description: Current backend
+security:
+  - bearerAuth: []
+paths:
+  /api/profile:
+    get:
+      tags:
+        - user-controller
+      operationId: profile
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/UserView"
+    put:
+      tags:
+        - user-controller
+      operationId: updateProfile
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ProfileRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/UserView"
+  /api/profile/addresses/{id}:
+    put:
+      tags:
+        - user-controller
+      operationId: updateAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/AddressView"
+    delete:
+      tags:
+        - user-controller
+      operationId: deleteAddress
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /api/jewellery-order/{id}:
+    get:
+      tags:
+        - jewellery-order-controller
+      operationId: one
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OrderView"
+    put:
+      tags:
+        - jewellery-order-controller
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderUpdateRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OrderView"
+    delete:
+      tags:
+        - jewellery-order-controller
+      operationId: delete_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /api/jewellery-item/{id}:
+    get:
+      tags:
+        - jewellery-item-controller
+      operationId: one_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+    put:
+      tags:
+        - jewellery-item-controller
+      operationId: update_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+    delete:
+      tags:
+        - jewellery-item-controller
+      operationId: delete_2
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+  /api/wishlist/{itemId}:
+    post:
+      tags:
+        - wishlist-controller
+      operationId: add
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+    delete:
+      tags:
+        - wishlist-controller
+      operationId: remove
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /api/try-on/{itemId}:
+    get:
+      tags:
+        - product-try-on-controller
+      operationId: saved
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
+    post:
+      tags:
+        - product-try-on-controller
+      operationId: generate
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - photo
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  type: string
+                  format: byte
+    delete:
+      tags:
+        - product-try-on-controller
+      operationId: delete
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+  /api/register:
+    post:
+      tags:
+        - user-controller
+      operationId: register
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/UserView"
+  /api/recommendations/search-history:
+    get:
+      tags:
+        - recommendation-controller
+      operationId: searchHistory
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  type: string
+    post:
+      tags:
+        - recommendation-controller
+      operationId: record
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SearchRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/profile/addresses:
+    get:
+      tags:
+        - user-controller
+      operationId: addresses
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AddressView"
+    post:
+      tags:
+        - user-controller
+      operationId: addAddress
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AddressRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/AddressView"
+  /api/password/reset:
+    post:
+      tags:
+        - user-controller
+      operationId: resetPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PasswordResetRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /api/password/forgot:
+    post:
+      tags:
+        - user-controller
+      operationId: forgotPassword
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /api/login:
+    post:
+      tags:
+        - user-controller
+      operationId: login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/LoginRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: object
+  /api/jewellery-order:
+    get:
+      tags:
+        - jewellery-order-controller
+      operationId: all_2
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderView"
+    post:
+      tags:
+        - jewellery-order-controller
+      operationId: add_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OrderRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OrderView"
+  /api/jewellery-order/{id}/cancel:
+    post:
+      tags:
+        - jewellery-order-controller
+      operationId: cancel
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CancelReasonRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/OrderView"
+  /api/jewellery-item:
+    get:
+      tags:
+        - jewellery-item-controller
+      operationId: all_3
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemView"
+    post:
+      tags:
+        - jewellery-item-controller
+      operationId: add_2
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ItemRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+  /api/jewellery-item/{id}/restore:
+    post:
+      tags:
+        - jewellery-item-controller
+      operationId: restore
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+  /api/jewellery-item/{id}/restock:
+    post:
+      tags:
+        - jewellery-item-controller
+      operationId: restock
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RestockRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+  /api/jewellery-item/{id}/archive:
+    post:
+      tags:
+        - jewellery-item-controller
+      operationId: archive
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ItemView"
+  /api/jewellery-item/import:
+    post:
+      tags:
+        - jewellery-item-controller
+      operationId: importCsv
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - file
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Result"
+  /api/feedback:
+    get:
+      tags:
+        - feedback-controller
+      operationId: all_4
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackView"
+    post:
+      tags:
+        - feedback-controller
+      operationId: add_3
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FeedbackRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/FeedbackView"
+  /api/email/verify:
+    post:
+      tags:
+        - user-controller
+      operationId: verifyEmail
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TokenRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /api/email/verify/resend:
+    post:
+      tags:
+        - user-controller
+      operationId: resendVerification
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EmailRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/MessageResponse"
+  /api/checkout:
+    post:
+      tags:
+        - checkout-controller
+      operationId: prepare
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckoutRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Start"
+  /api/checkout/verify:
+    post:
+      tags:
+        - checkout-controller
+      operationId: verify
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Verify"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Status"
+  /api/checkout/razorpay/webhook:
+    post:
+      tags:
+        - checkout-controller
+      operationId: webhook
+      parameters:
+        - name: X-Razorpay-Signature
+          in: header
+          required: false
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+  /api/chat:
+    post:
+      tags:
+        - chat-controller
+      operationId: message
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChatRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/ChatResponse"
+  /api/admin/buyers/invite:
+    post:
+      tags:
+        - user-controller
+      operationId: inviteBuyer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InviteBuyerRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/UserView"
+  /api/admin-login/verify:
+    post:
+      tags:
+        - user-controller
+      operationId: verifyAdminLogin
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminCodeRequest"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/LoginDTO"
+  /api/wishlist:
+    get:
+      tags:
+        - wishlist-controller
+      operationId: all
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemView"
+  /api/users:
+    get:
+      tags:
+        - user-controller
+      operationId: all_1
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/UserView"
+  /api/recommendations:
+    get:
+      tags:
+        - recommendation-controller
+      operationId: recommended
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemView"
+  /api/metal-rates:
+    get:
+      tags:
+        - metal-rate-controller
+      operationId: quote
+      parameters:
+        - name: material
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: purity
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: refresh
+          in: query
+          required: false
+          schema:
+            type: boolean
+            default: false
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Quote"
+  /api/jewellery-order/user/{id}:
+    get:
+      tags:
+        - jewellery-order-controller
+      operationId: byUser
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OrderView"
+  /api/jewellery-item/{id}/similar:
+    get:
+      tags:
+        - jewellery-item-controller
+      operationId: similar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemView"
+  /api/jewellery-item/{id}/reviews:
+    get:
+      tags:
+        - jewellery-item-controller
+      operationId: reviews
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ProductReviewView"
+  /api/jewellery-item/low-stock:
+    get:
+      tags:
+        - jewellery-item-controller
+      operationId: lowStock
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ItemView"
+  /api/jewellery-item/import-template:
+    get:
+      tags:
+        - jewellery-item-controller
+      operationId: template
+      responses:
+        "200":
+          description: OK
+          content:
+            text/csv:
+              schema:
+                type: string
+  /api/jewellery-item/export:
+    get:
+      tags:
+        - jewellery-item-controller
+      operationId: exportCsv
+      responses:
+        "200":
+          description: OK
+          content:
+            text/csv:
+              schema:
+                type: string
+  /api/feedback/{id}:
+    get:
+      tags:
+        - feedback-controller
+      operationId: one_2
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/FeedbackView"
+    delete:
+      tags:
+        - feedback-controller
+      operationId: delete_3
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/FeedbackView"
+  /api/feedback/user/{id}:
+    get:
+      tags:
+        - feedback-controller
+      operationId: byUser_1
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int32
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackView"
+  /api/feedback/item/{id}:
+    get:
+      tags:
+        - feedback-controller
+      operationId: byItem
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FeedbackView"
+  /api/faqs:
+    get:
+      tags:
+        - chat-controller
+      operationId: faqs
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FaqResponse"
+  /api/checkout/{id}/status:
+    get:
+      tags:
+        - checkout-controller
+      operationId: status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Status"
+  /api/chat/history/{sessionId}:
+    get:
+      tags:
+        - chat-controller
+      operationId: history
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ChatMessage"
+  /api/admin/dashboard:
+    get:
+      tags:
+        - dashboard-controller
+      operationId: overview
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        "200":
+          description: OK
+          content:
+            "*/*":
+              schema:
+                $ref: "#/components/schemas/Overview"
+  /api/chat/memory/{sessionId}:
+    delete:
+      tags:
+        - chat-controller
+      operationId: clear
+      parameters:
+        - name: sessionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+components:
+  schemas:
+    ProfileRequest:
+      required:
+        - username
+      type: object
+      properties:
+        username:
+          maxLength: 100
+          minLength: 0
+          type: string
+        mobileNumber:
+          pattern: "^$|^[6-9][0-9]{9}$"
+          type: string
+    UserView:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int32
+        email:
+          type: string
+        username:
+          type: string
+        mobileNumber:
+          type: string
+        userRole:
+          type: string
+    AddressRequest:
+      required:
+        - city
+        - label
+        - line1
+        - postalCode
+        - state
+      type: object
+      properties:
+        label:
+          maxLength: 40
+          minLength: 0
+          type: string
+        line1:
+          maxLength: 250
+          minLength: 0
+          type: string
+        city:
+          maxLength: 80
+          minLength: 0
+          type: string
+        state:
+          maxLength: 80
+          minLength: 0
+          type: string
+        postalCode:
+          maxLength: 12
+          minLength: 0
+          type: string
+    AddressView:
+      type: object
+      properties:
+        addressId:
+          type: integer
+          format: int64
+        label:
+          type: string
+        line1:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        postalCode:
+          type: string
+    OrderUpdateRequest:
+      type: object
+      properties:
+        status:
+          type: string
+        deliveryAddress:
+          type: string
+        comments:
+          type: string
+    BillingView:
+      type: object
+      properties:
+        grossWeight:
+          type: number
+          format: double
+        stoneWeight:
+          type: number
+          format: double
+        netMetalWeight:
+          type: number
+          format: double
+        metalRate:
+          type: number
+          format: double
+        metalValue:
+          type: number
+          format: double
+        stoneValue:
+          type: number
+          format: double
+        makingCharges:
+          type: number
+          format: double
+        vaCharges:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+        taxableAmount:
+          type: number
+          format: double
+        cgstRate:
+          type: number
+          format: double
+        cgstAmount:
+          type: number
+          format: double
+        sgstRate:
+          type: number
+          format: double
+        sgstAmount:
+          type: number
+          format: double
+        roundOff:
+          type: number
+          format: double
+        grandTotal:
+          type: number
+          format: double
+    InvoiceItemView:
+      type: object
+      properties:
+        itemName:
+          type: string
+        sku:
+          type: string
+        material:
+          type: string
+        purity:
+          type: string
+    ItemSummary:
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        itemName:
+          type: string
+        sku:
+          type: string
+        material:
+          type: string
+        purity:
+          type: string
+    OrderView:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int64
+        checkoutId:
+          type: integer
+          format: int64
+        cancellationReason:
+          type: string
+        userId:
+          type: integer
+          format: int32
+        itemId:
+          type: integer
+          format: int64
+        quantity:
+          type: integer
+          format: int32
+        orderDate:
+          type: string
+          format: date
+        status:
+          type: string
+        deliveryAddress:
+          type: string
+        comments:
+          type: string
+        totalPrice:
+          type: number
+          format: double
+        item:
+          $ref: "#/components/schemas/ItemSummary"
+        user:
+          $ref: "#/components/schemas/UserSummary"
+        billing:
+          $ref: "#/components/schemas/BillingView"
+        invoiceItem:
+          $ref: "#/components/schemas/InvoiceItemView"
+        paymentStatus:
+          type: string
+        refundStatus:
+          type: string
+    UserSummary:
+      type: object
+      properties:
+        userId:
+          type: integer
+          format: int32
+        username:
+          type: string
+    ItemRequest:
+      required:
+        - category
+        - description
+        - imageUrl
+        - itemName
+        - makingCharges
+        - material
+        - pricePerGram
+        - reorderThreshold
+        - stockQuantity
+        - weightInGrams
+      type: object
+      properties:
+        itemName:
+          type: string
+        sku:
+          pattern: "^$|^[A-Za-z0-9][A-Za-z0-9-]{2,39}$"
+          type: string
+        description:
+          maxLength: 2000
+          minLength: 0
+          type: string
+        imageUrl:
+          maxLength: 2800000
+          minLength: 0
+          type: string
+        category:
+          type: string
+        material:
+          type: string
+        purity:
+          type: string
+        stoneClarity:
+          type: string
+        weightInGrams:
+          type: number
+          format: double
+        stoneWeightInGrams:
+          type: number
+          format: double
+        makingCharges:
+          type: number
+          format: double
+        pricePerGram:
+          type: number
+          format: double
+        stoneValue:
+          type: number
+          format: double
+        vaCharges:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+        cgstRate:
+          type: number
+          format: double
+        sgstRate:
+          type: number
+          format: double
+        roundOff:
+          type: number
+          format: double
+        stockQuantity:
+          type: integer
+          format: int32
+        reorderThreshold:
+          type: integer
+          format: int32
+    ItemView:
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        itemName:
+          type: string
+        sku:
+          type: string
+        active:
+          type: boolean
+        description:
+          type: string
+        imageUrl:
+          type: string
+        category:
+          type: string
+        material:
+          type: string
+        purity:
+          type: string
+        stoneClarity:
+          type: string
+        weightInGrams:
+          type: number
+          format: double
+        stoneWeightInGrams:
+          type: number
+          format: double
+        pricePerGram:
+          type: number
+          format: double
+        stoneValue:
+          type: number
+          format: double
+        makingCharges:
+          type: number
+          format: double
+        vaCharges:
+          type: number
+          format: double
+        discountAmount:
+          type: number
+          format: double
+        cgstRate:
+          type: number
+          format: double
+        sgstRate:
+          type: number
+          format: double
+        roundOff:
+          type: number
+          format: double
+        totalPrice:
+          type: number
+          format: double
+        billing:
+          $ref: "#/components/schemas/BillingView"
+        stockQuantity:
+          type: integer
+          format: int32
+        reorderThreshold:
+          type: integer
+          format: int32
+        ratingAverage:
+          type: number
+          format: double
+        ratingCount:
+          type: integer
+          format: int64
+    RegistrationRequest:
+      required:
+        - email
+        - mobileNumber
+        - password
+        - username
+      type: object
+      properties:
+        email:
+          type: string
+        username:
+          maxLength: 100
+          minLength: 0
+          type: string
+        password:
+          maxLength: 72
+          minLength: 8
+          pattern: "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^A-Za-z0-9]).+$"
+          type: string
+        mobileNumber:
+          pattern: "^[6-9][0-9]{9}$"
+          type: string
+        userRole:
+          pattern: Admin|User
+          type: string
+    SearchRequest:
+      required:
+        - term
+      type: object
+      properties:
+        term:
+          maxLength: 120
+          minLength: 0
+          type: string
+    PasswordResetRequest:
+      required:
+        - password
+        - token
+      type: object
+      properties:
+        token:
+          type: string
+        password:
+          type: string
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    EmailRequest:
+      required:
+        - email
+      type: object
+      properties:
+        email:
+          type: string
+    LoginRequest:
+      required:
+        - email
+        - password
+      type: object
+      properties:
+        email:
+          type: string
+        password:
+          type: string
+    OrderRequest:
+      required:
+        - deliveryAddress
+        - itemId
+        - quantity
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        quantity:
+          minimum: 1
+          type: integer
+          format: int32
+        deliveryAddress:
+          type: string
+        comments:
+          type: string
+    CancelReasonRequest:
+      required:
+        - reason
+      type: object
+      properties:
+        reason:
+          maxLength: 500
+          minLength: 0
+          type: string
+    RestockRequest:
+      required:
+        - quantity
+      type: object
+      properties:
+        quantity:
+          minimum: 1
+          type: integer
+          format: int32
+    Result:
+      type: object
+      properties:
+        created:
+          type: integer
+          format: int32
+        updated:
+          type: integer
+          format: int32
+        errors:
+          type: array
+          items:
+            type: string
+    FeedbackRequest:
+      required:
+        - feedbackText
+        - itemId
+        - rating
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        feedbackText:
+          maxLength: 2000
+          minLength: 0
+          type: string
+        rating:
+          maximum: 5
+          minimum: 1
+          type: integer
+          format: int32
+    FeedbackView:
+      type: object
+      properties:
+        feedbackId:
+          type: integer
+          format: int64
+        userId:
+          type: integer
+          format: int32
+        itemId:
+          type: integer
+          format: int64
+        feedbackText:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        date:
+          type: string
+          format: date
+        user:
+          $ref: "#/components/schemas/UserSummary"
+        item:
+          $ref: "#/components/schemas/ItemSummary"
+    TokenRequest:
+      required:
+        - token
+      type: object
+      properties:
+        token:
+          type: string
+    CheckoutRequest:
+      required:
+        - addressId
+        - items
+      type: object
+      properties:
+        addressId:
+          type: integer
+          format: int64
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Line"
+        comments:
+          type: string
+    Line:
+      required:
+        - itemId
+        - quantity
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        quantity:
+          minimum: 1
+          type: integer
+          format: int32
+    Start:
+      type: object
+      properties:
+        checkoutId:
+          type: integer
+          format: int64
+        razorpayOrderId:
+          type: string
+        keyId:
+          type: string
+        amountPaise:
+          type: integer
+          format: int64
+        currency:
+          type: string
+        buyerName:
+          type: string
+        buyerEmail:
+          type: string
+        buyerMobile:
+          type: string
+    Verify:
+      required:
+        - checkoutId
+        - razorpayOrderId
+        - razorpayPaymentId
+        - razorpaySignature
+      type: object
+      properties:
+        checkoutId:
+          type: integer
+          format: int64
+        razorpayOrderId:
+          type: string
+        razorpayPaymentId:
+          type: string
+        razorpaySignature:
+          type: string
+    CheckoutResult:
+      type: object
+      properties:
+        checkoutId:
+          type: integer
+          format: int64
+        totalPrice:
+          type: number
+          format: double
+        orders:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderView"
+    Status:
+      type: object
+      properties:
+        checkoutId:
+          type: integer
+          format: int64
+        paymentStatus:
+          type: string
+        order:
+          $ref: "#/components/schemas/CheckoutResult"
+        payment:
+          $ref: "#/components/schemas/Start"
+    ChatRequest:
+      required:
+        - message
+      type: object
+      properties:
+        message:
+          maxLength: 1000
+          minLength: 0
+          type: string
+        sessionId:
+          pattern: "[0-9a-fA-F-]{36}"
+          type: string
+    ChatResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+        matched:
+          type: boolean
+        matchedQuestion:
+          type: string
+        category:
+          type: string
+        confidence:
+          type: number
+          format: double
+        source:
+          type: string
+        sessionId:
+          type: string
+        resolvedQuestion:
+          type: string
+    InviteBuyerRequest:
+      required:
+        - email
+        - username
+      type: object
+      properties:
+        username:
+          maxLength: 80
+          minLength: 0
+          type: string
+        email:
+          type: string
+        mobileNumber:
+          pattern: "^$|^[0-9]{10}$"
+          type: string
+    AdminCodeRequest:
+      required:
+        - code
+        - email
+      type: object
+      properties:
+        email:
+          type: string
+        code:
+          pattern: "^[0-9]{6}$"
+          type: string
+    LoginDTO:
+      type: object
+      properties:
+        token:
+          type: string
+        username:
+          type: string
+        userRole:
+          type: string
+        userId:
+          type: integer
+          format: int32
+    Quote:
+      type: object
+      properties:
+        material:
+          type: string
+        purity:
+          type: string
+        ratePerGram:
+          type: number
+          format: double
+        source:
+          type: string
+        fetchedAt:
+          type: string
+          format: date-time
+    ProductReviewView:
+      type: object
+      properties:
+        reviewerName:
+          type: string
+        feedbackText:
+          type: string
+        rating:
+          type: integer
+          format: int32
+        date:
+          type: string
+          format: date
+    FaqResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        category:
+          type: string
+        question:
+          type: string
+        answer:
+          type: string
+    ChatMessage:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        sessionId:
+          type: string
+        userMessage:
+          type: string
+        botReply:
+          type: string
+        matchedFaqId:
+          type: integer
+          format: int64
+        similarityScore:
+          type: number
+          format: double
+        createdAt:
+          type: string
+          format: date-time
+    CategorySales:
+      type: object
+      properties:
+        category:
+          type: string
+        sales:
+          type: number
+          format: double
+        units:
+          type: integer
+          format: int64
+    Overview:
+      type: object
+      properties:
+        from:
+          type: string
+          format: date
+        to:
+          type: string
+          format: date
+        previousFrom:
+          type: string
+          format: date
+        previousTo:
+          type: string
+          format: date
+        generatedAt:
+          type: string
+          format: date-time
+        granularity:
+          type: string
+        summary:
+          $ref: "#/components/schemas/Summary"
+        trend:
+          type: array
+          items:
+            $ref: "#/components/schemas/Trend"
+        statuses:
+          type: array
+          items:
+            $ref: "#/components/schemas/StatusCount"
+        categories:
+          type: array
+          items:
+            $ref: "#/components/schemas/CategorySales"
+        topPieces:
+          type: array
+          items:
+            $ref: "#/components/schemas/TopPiece"
+        stockAlerts:
+          type: array
+          items:
+            $ref: "#/components/schemas/StockAlert"
+        recentOrders:
+          type: array
+          items:
+            $ref: "#/components/schemas/RecentOrder"
+    RecentOrder:
+      type: object
+      properties:
+        orderId:
+          type: integer
+          format: int64
+        itemName:
+          type: string
+        buyerName:
+          type: string
+        date:
+          type: string
+          format: date
+        status:
+          type: string
+        paymentStatus:
+          type: string
+        quantity:
+          type: integer
+          format: int32
+        total:
+          type: number
+          format: double
+    StatusCount:
+      type: object
+      properties:
+        status:
+          type: string
+        count:
+          type: integer
+          format: int64
+    StockAlert:
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        itemName:
+          type: string
+        sku:
+          type: string
+        stock:
+          type: integer
+          format: int32
+        threshold:
+          type: integer
+          format: int32
+    Summary:
+      type: object
+      properties:
+        netSales:
+          type: number
+          format: double
+        previousNetSales:
+          type: number
+          format: double
+        orders:
+          type: integer
+          format: int64
+        previousOrders:
+          type: integer
+          format: int64
+        unitsSold:
+          type: integer
+          format: int64
+        retainedOrders:
+          type: integer
+          format: int64
+        averageOrderValue:
+          type: number
+          format: double
+        refundsInitiated:
+          type: number
+          format: double
+        buyers:
+          type: integer
+          format: int64
+        activePieces:
+          type: integer
+          format: int64
+        stockUnits:
+          type: integer
+          format: int64
+        lowStockCount:
+          type: integer
+          format: int64
+        outOfStockCount:
+          type: integer
+          format: int64
+    TopPiece:
+      type: object
+      properties:
+        itemId:
+          type: integer
+          format: int64
+        itemName:
+          type: string
+        units:
+          type: integer
+          format: int64
+        sales:
+          type: number
+          format: double
+    Trend:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        sales:
+          type: number
+          format: double
+        orders:
+          type: integer
+          format: int64
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  

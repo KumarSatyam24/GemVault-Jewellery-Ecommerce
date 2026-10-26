@@ -1,0 +1,6 @@
+<canvas #canvas role="img" [attr.aria-label]="label"></canvas>
+<ul class="sr-only">
+  <li *ngFor="let name of labels; let i = index">
+    {{ name }}: {{ values[i] }}
+  </li>
+</ul>

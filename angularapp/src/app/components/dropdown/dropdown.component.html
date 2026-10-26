@@ -1,0 +1,43 @@
+<div class="relative w-full">
+    <button
+      #trigger
+      type="button"
+      class="flex min-h-[46px] w-full items-center justify-between gap-3 rounded-lg border border-charcoal/25 bg-alabaster px-3 py-2 text-left text-sm text-charcoal shadow-sm transition-colors hover:border-gold focus:border-gold dark:border-white/30 dark:bg-[#24201d] dark:text-alabaster"
+      [disabled]="disabled"
+      [attr.aria-label]="label"
+      [attr.aria-expanded]="open"
+      aria-haspopup="listbox"
+      (click)="toggle()"
+    >
+      <span class="truncate">{{ selectedLabel }}</span>
+      <svg
+        class="h-4 w-4 shrink-0 text-gold"
+        viewBox="0 0 20 20"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1.8"
+        aria-hidden="true"
+      >
+        <path d="m5 7 5 5 5-5" />
+      </svg>
+    </button>
+    <div
+      *ngIf="open"
+      role="listbox"
+      [attr.aria-label]="label"
+      class="absolute left-0 right-0 top-full z-50 mt-1 max-h-64 overflow-y-auto rounded-lg border border-charcoal/20 bg-alabaster p-1 shadow-xl dark:border-white/25 dark:bg-[#24201d]"
+    >
+      <button
+        *ngFor="let option of options; let index = index"
+        type="button"
+        role="option"
+        [attr.aria-selected]="option.value === value"
+        class="block w-full rounded-md px-3 py-2 text-left text-sm text-charcoal hover:bg-taupe focus:bg-taupe dark:text-alabaster dark:hover:bg-[#39312b] dark:focus:bg-[#39312b]"
+        [class.bg-taupe]="index === activeIndex"
+        (click)="choose(option)"
+      >
+        {{ option.label }}
+      </button>
+    </div>
+  </div>
+  

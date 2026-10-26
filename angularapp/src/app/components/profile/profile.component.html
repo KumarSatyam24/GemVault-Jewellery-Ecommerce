@@ -1,0 +1,204 @@
+<section class="page-top pb-3 pt-4">
+  <p class="eyebrow">Your account / details</p>
+  <h1 class="page-heading">Your details</h1>
+  <p class="page-intro">
+    Keep your profile and delivery addresses ready for a smoother checkout.
+  </p>
+</section>
+<p class="error" *ngIf="error" role="alert">{{ error }}</p>
+<p class="success" *ngIf="message" role="status">{{ message }}</p>
+<div
+  class="profile-grid grid grid-cols-[minmax(240px,0.75fr)_minmax(0,1.25fr)] gap-[clamp(35px,5vw,80px)] border-t border-charcoal/20 pt-9 max-[950px]:grid-cols-1 dark:border-white/20"
+>
+  <section class="profile-section" aria-labelledby="account-heading">
+    <p class="eyebrow">01 / Account</p>
+    <h2 id="account-heading" class="mb-5 mt-3 font-display text-[31px]">
+      Personal details
+    </h2>
+    <p
+      class="account-email border-b border-charcoal/10 pb-6 text-[13px] text-muted dark:border-white/20"
+    >
+      {{ email }}
+    </p>
+    <form
+      class="mt-7 grid gap-6"
+      [formGroup]="profileForm"
+      (ngSubmit)="saveProfile()"
+    >
+      <div>
+        <label
+          >Full name
+          <input
+            class="!rounded-lg"
+            formControlName="username"
+            maxlength="100"
+            autocomplete="name"
+        /></label>
+        <small
+          class="error-text"
+          *ngIf="
+            profileForm.controls.username.touched &&
+            profileForm.controls.username.invalid
+          "
+          >Enter your name.</small
+        >
+      </div>
+      <div>
+        <label
+          >Mobile number
+          <input
+            class="!rounded-lg"
+            formControlName="mobileNumber"
+            inputmode="numeric"
+            maxlength="10"
+            autocomplete="tel"
+        /></label>
+        <small
+          class="error-text"
+          *ngIf="
+            profileForm.controls.mobileNumber.touched &&
+            profileForm.controls.mobileNumber.invalid
+          "
+          >Use 10 digits starting with 6, 7, 8, or 9, or leave blank.</small
+        >
+      </div>
+      <button class="mt-1 w-fit rounded-lg" type="submit" [disabled]="saving">
+        Save details
+      </button>
+    </form>
+  </section>
+  <section class="profile-section" aria-labelledby="addresses-heading">
+    <p class="eyebrow">02 / Delivery</p>
+    <h2 id="addresses-heading" class="mb-6 mt-3 font-display text-[31px]">
+      Saved addresses
+    </h2>
+    <p class="section-copy text-[13px] leading-7 text-muted">
+      Choose an address at checkout. You can save more than one.
+    </p>
+    <div
+      class="address-list mt-5 border-t border-charcoal/10 dark:border-white/20"
+      *ngIf="addresses.length"
+    >
+      <article
+        class="address-row flex justify-between gap-4 border-b border-charcoal/10 py-5 max-[500px]:block dark:border-white/20"
+        *ngFor="let address of addresses"
+      >
+        <div>
+          <h3 class="mb-2 font-display text-xl">{{ address.label }}</h3>
+          <p class="text-xs leading-6 text-muted">
+            {{ address.line1 }}<br />{{ address.city }}, {{ address.state }}
+            {{ address.postalCode }}
+          </p>
+        </div>
+        <div class="address-actions flex items-start gap-4 max-[500px]:mt-2">
+          <button
+            class="btn-quiet"
+            type="button"
+            (click)="editAddress(address)"
+          >
+            Edit</button
+          ><button
+            class="btn-quiet"
+            type="button"
+            (click)="deleteAddress(address)"
+          >
+            Remove
+          </button>
+        </div>
+      </article>
+    </div>
+    <p class="muted" *ngIf="!addresses.length">No saved addresses yet.</p>
+    <div
+      class="address-form mt-12 border-t border-charcoal/30 pt-8 dark:border-white/20"
+    >
+      <h3 class="mb-2 font-display text-[27px]">
+        {{ editingAddressId ? "Edit address" : "Add an address" }}
+      </h3>
+      <p class="mb-7 text-[13px] leading-6 text-muted">
+        Save a delivery address for a quicker checkout.
+      </p>
+      <form
+        class="grid gap-6"
+        [formGroup]="addressForm"
+        (ngSubmit)="saveAddress()"
+      >
+        <label
+          >Label
+          <select
+            class="!rounded-lg"
+            [(ngModel)]="addressLabelChoice"
+            [ngModelOptions]="{ standalone: true }"
+          >
+            <option value="Home">Home</option>
+            <option value="Office">Office</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label *ngIf="addressLabelChoice === 'Other'"
+          >Other label
+          <input
+            class="!rounded-lg"
+            [(ngModel)]="customAddressLabel"
+            [ngModelOptions]="{ standalone: true }"
+            maxlength="40"
+            placeholder="Give this address a name"
+          />
+        </label>
+        <label
+          >Street address
+          <input
+            class="!rounded-lg"
+            formControlName="line1"
+            maxlength="250"
+            autocomplete="street-address"
+            placeholder="Building, street and apartment"
+        /></label>
+        <div class="row gap-x-5 gap-y-6">
+          <label
+            >City
+            <input
+              class="!rounded-lg"
+              formControlName="city"
+              maxlength="80"
+              autocomplete="address-level2"
+              placeholder="City" /></label
+          ><label
+            >State
+            <input
+              class="!rounded-lg"
+              formControlName="state"
+              maxlength="80"
+              autocomplete="address-level1"
+              placeholder="State"
+          /></label>
+        </div>
+        <label
+          >Postal code
+          <input
+            class="!rounded-lg"
+            formControlName="postalCode"
+            maxlength="12"
+            autocomplete="postal-code"
+            placeholder="Postal code"
+        /></label>
+        <small
+          class="error-text"
+          *ngIf="addressForm.touched && addressForm.invalid"
+          >Complete all address fields.</small
+        >
+        <div class="form-actions !mt-1">
+          <button class="!rounded-lg" type="submit" [disabled]="saving">
+            {{ editingAddressId ? "Update address" : "Save address" }}</button
+          ><button
+            class="btn-outline"
+            type="button"
+            *ngIf="editingAddressId"
+            (click)="resetAddress()"
+          >
+            Cancel edit
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>

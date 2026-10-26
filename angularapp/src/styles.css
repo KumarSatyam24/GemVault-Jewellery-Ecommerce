@@ -1,0 +1,670 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply m-0 bg-alabaster font-sans text-charcoal antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display font-normal;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    font: inherit;
+  }
+
+  button {
+    @apply cursor-pointer;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  a {
+    @apply underline-offset-4;
+  }
+
+  :focus-visible {
+    outline: 2px solid #b48b42;
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background: #ebe5de;
+    color: #1a1a1a;
+  }
+}
+
+@layer components {
+  .shell {
+    @apply mx-auto w-full max-w-editorial px-5 sm:px-8 lg:px-12 xl:px-16;
+  }
+
+  .eyebrow {
+    @apply text-[11px] font-semibold uppercase tracking-[0.24em] text-gold;
+  }
+
+  .page-heading {
+    @apply mb-3 text-4xl leading-tight sm:text-5xl lg:text-6xl;
+  }
+
+  .section-heading {
+    @apply text-3xl leading-tight sm:text-4xl;
+  }
+
+  .page-intro {
+    @apply mb-8 max-w-2xl text-sm leading-7 text-muted sm:text-base;
+  }
+
+  .panel {
+    @apply border border-charcoal/10 bg-alabaster p-6 sm:p-8;
+  }
+
+  .form-panel {
+    @apply max-w-3xl;
+  }
+
+  .btn,
+  button[type="submit"],
+  .action-primary {
+    @apply inline-flex min-h-[46px] items-center justify-center border border-charcoal bg-charcoal px-6 py-3 text-xs font-semibold uppercase tracking-[0.13em] text-alabaster transition-colors duration-200 hover:border-gold hover:bg-gold hover:text-charcoal disabled:hover:border-charcoal disabled:hover:bg-charcoal disabled:hover:text-alabaster;
+  }
+
+  .btn-outline,
+  .action-secondary {
+    @apply inline-flex min-h-[46px] items-center justify-center border border-charcoal/30 bg-transparent px-6 py-3 text-xs font-semibold uppercase tracking-[0.13em] text-charcoal transition-colors duration-200 hover:border-charcoal hover:bg-charcoal hover:text-alabaster;
+  }
+
+  .btn-quiet {
+    @apply border-0 bg-transparent px-0 py-2 text-xs font-semibold uppercase tracking-[0.12em] text-charcoal underline decoration-charcoal/30 underline-offset-[6px] transition-colors duration-200 hover:text-gold;
+  }
+
+  .btn-danger {
+    @apply border border-[#9B4B3D] bg-transparent px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[#873E34] transition-colors duration-200 hover:bg-[#873E34] hover:text-alabaster;
+  }
+
+  .field,
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    @apply mt-2 block min-h-[46px] w-full rounded-none border border-charcoal/20 bg-transparent px-3 py-2 text-sm text-charcoal outline-none transition-colors duration-200 placeholder:text-muted/70 focus:border-gold focus:ring-1 focus:ring-gold;
+  }
+
+  select {
+    appearance: none;
+    padding-right: 38px !important;
+    background-image:
+      linear-gradient(45deg, transparent 50%, #7c6032 50%),
+      linear-gradient(135deg, #7c6032 50%, transparent 50%) !important;
+    background-position:
+      calc(100% - 18px) 50%,
+      calc(100% - 13px) 50% !important;
+    background-size:
+      5px 5px,
+      5px 5px !important;
+    background-repeat: no-repeat !important;
+  }
+
+  textarea {
+    @apply min-h-[100px];
+  }
+
+  label {
+    @apply block text-xs font-semibold uppercase tracking-[0.11em] text-charcoal;
+  }
+
+  label input,
+  label select,
+  label textarea {
+    @apply font-normal normal-case tracking-normal;
+  }
+
+  .field-hint {
+    @apply mt-2 block text-xs leading-5 text-muted;
+  }
+
+  .error {
+    @apply my-4 border-l-2 border-[#A33A31] bg-[#FAEEEC] px-4 py-3 text-sm leading-6 text-[#842E27];
+  }
+
+  .success {
+    @apply my-4 border-l-2 border-[#38664D] bg-[#EDF4EE] px-4 py-3 text-sm leading-6 text-[#28563E];
+  }
+
+  small.error-text {
+    @apply mt-2 block text-xs leading-5 text-[#A33A31];
+  }
+
+  .muted {
+    @apply text-sm leading-6 text-muted;
+  }
+
+  .table-wrap {
+    @apply w-full overflow-x-auto border-y border-charcoal/15;
+  }
+
+  table {
+    @apply w-full min-w-[640px] border-collapse text-left text-sm;
+  }
+
+  th {
+    @apply border-b border-charcoal/20 bg-taupe/50 px-4 py-4 text-[11px] font-semibold uppercase tracking-[0.13em] text-muted;
+  }
+
+  td {
+    @apply border-b border-charcoal/10 px-4 py-4 align-top leading-6;
+  }
+
+  tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  tbody tr:hover {
+    @apply bg-taupe/25;
+  }
+
+  .row {
+    @apply grid gap-5 sm:grid-cols-2;
+  }
+
+  .form-actions {
+    @apply mt-7 flex flex-wrap items-center gap-3;
+  }
+
+  .empty-state {
+    @apply border-y border-charcoal/15 py-14 text-center;
+  }
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 48px !important;
+}
+
+.password-toggle {
+  position: absolute;
+  top: calc(50% + 4px);
+  right: 5px;
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #6c6863;
+}
+
+.password-toggle:hover,
+.password-toggle:focus-visible {
+  color: #9a7536;
+}
+
+.password-toggle svg {
+  width: 19px;
+  height: 19px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+.auth-page {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(24px, 4vw, 70px);
+  min-height: calc(100svh - 184px);
+  padding: 18px 0;
+}
+
+.auth-art {
+  position: relative;
+  min-height: 480px;
+  overflow: hidden;
+  border-radius: 18px;
+  background: #27221e;
+}
+
+.auth-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.auth-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(0deg, rgba(20, 17, 14, 0.78), transparent 58%);
+}
+
+.art-caption {
+  position: absolute;
+  z-index: 1;
+  left: clamp(28px, 5vw, 80px);
+  bottom: clamp(35px, 6vw, 85px);
+  color: #f9f8f6;
+}
+
+.art-caption p {
+  margin: 14px 0 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(32px, 3.2vw, 52px);
+  line-height: 1.12;
+}
+
+.auth-content {
+  display: grid;
+  align-items: center;
+  padding: 28px clamp(30px, 6vw, 100px);
+}
+
+.auth-form-wrap {
+  width: 100%;
+  max-width: 430px;
+  margin: auto;
+}
+
+.auth-form-wrap h1 {
+  margin: 13px 0 10px;
+  font-family: "Playfair Display", Georgia, serif;
+  font-size: clamp(38px, 4vw, 55px);
+  line-height: 1.12;
+}
+
+.auth-intro {
+  margin: 0 0 20px;
+  color: #6c6863;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.auth-form-wrap form label {
+  margin: 13px 0 0;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 28px;
+}
+
+.signup-page .auth-art {
+  min-height: 560px;
+}
+
+.signup-page .auth-content {
+  padding-block: 28px;
+}
+
+.signup-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  column-gap: 16px;
+}
+
+.signup-form>label:nth-of-type(1),
+.signup-form>label:nth-of-type(4),
+.signup-form>label:nth-of-type(5),
+.signup-form>small,
+.signup-form>button {
+  grid-column: 1 / -1;
+}
+
+.signup-form>label:nth-of-type(1) {
+  margin-top: 0;
+}
+
+.signup-form>small {
+  margin-top: 3px;
+}
+
+.signup-form .field-hint {
+  margin-bottom: -3px;
+}
+
+.auth-switch {
+  margin-top: 23px;
+  color: #6c6863;
+  font-size: 13px;
+}
+
+.auth-switch a {
+  color: #1a1a1a;
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-color: #b48b42;
+  text-underline-offset: 5px;
+}
+
+@media (max-width: 1279px) {}
+
+@media (max-width: 1023px) {}
+
+@media (max-width: 760px) {
+  body:has(.auth-page) .site-header {
+    position: static;
+  }
+
+  body:has(.auth-page) .main-content {
+    min-height: 0;
+  }
+
+  .auth-page {
+    display: block;
+    padding: 0;
+    min-height: 0;
+  }
+
+  .auth-art {
+    display: none;
+  }
+
+  .auth-content {
+    height: auto;
+    min-height: 100%;
+    padding: 16px 26px 28px;
+  }
+
+  .auth-form-wrap {
+    max-width: 500px;
+  }
+
+  .signup-form {
+    grid-template-columns: 1fr;
+  }
+
+  .auth-form-wrap h1 {
+    margin: 4px 0;
+    font-size: 30px;
+  }
+
+  .auth-intro {
+    display: none;
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .auth-form-wrap form label {
+    margin-top: 4px;
+    font-size: 10px;
+  }
+
+  .auth-page input {
+    min-height: 34px;
+    padding-block: 4px;
+  }
+
+  .auth-page .field-hint,
+  .auth-page small.error-text {
+    margin-top: 2px;
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .auth-submit {
+    min-height: 40px;
+    margin-top: 14px;
+  }
+
+  .auth-switch {
+    margin: 12px 0 0;
+    font-size: 12px;
+  }
+}
+
+/* Authentication pages grow with their forms and use the document scrollbar. */
+app-root:has(.auth-page) {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+}
+
+app-root:has(.auth-page) .announcement,
+app-root:has(.auth-page) .site-header,
+app-root:has(.auth-page) .site-footer {
+  flex: 0 0 auto;
+}
+
+app-root:has(.auth-page) .site-header {
+  position: static;
+}
+
+app-root:has(.auth-page) .main-content {
+  flex: 1 0 auto;
+  min-height: auto;
+  padding: 0;
+}
+
+app-root:has(.signup-page) .auth-submit {
+  margin-top: 20px;
+}
+
+app-root:has(.signup-page) .oauth-divider {
+  margin-block: 12px;
+}
+
+app-root:has(.signup-page) .google-signin {
+  min-height: 42px;
+}
+
+app-root:has(.auth-page) .site-footer .footer-top,
+app-root:has(.auth-page) .site-footer>.shell:nth-child(2) {
+  display: none;
+}
+
+app-root:has(.auth-page) .site-footer>.shell:last-child {
+  min-height: 66px;
+  flex-direction: row;
+  justify-content: space-between;
+  padding-block: 0;
+}
+
+@media (max-width: 760px) {
+  app-root:has(.auth-page) .announcement {
+    padding-block: 5px;
+    font-size: 8px;
+  }
+
+  app-root:has(.auth-page) .site-footer>.shell:last-child {
+    min-height: 50px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-block: 0;
+    font-size: 9px;
+  }
+}
+
+html[data-theme="dark"] body {
+  background: #171514;
+  color: #eee9e2;
+}
+
+html[data-theme="dark"] .site-header,
+html[data-theme="dark"] .primary-nav,
+html[data-theme="dark"] .cart-sidebar {
+  background: #1d1a18;
+}
+
+html[data-theme="dark"] .site-header {
+  border-color: rgba(238, 233, 226, 0.18);
+}
+
+.primary-nav a.active {
+  border-bottom-color: #b48b42;
+  color: #9a7536;
+}
+
+html[data-theme="dark"] .brand,
+html[data-theme="dark"] .primary-nav a,
+html[data-theme="dark"] .nav-logout,
+html[data-theme="dark"] .mobile-toggle,
+html[data-theme="dark"] .theme-toggle,
+html[data-theme="dark"] label,
+html[data-theme="dark"] .order-toolbar strong,
+html[data-theme="dark"] .record-head h2 {
+  color: #f5f0e9;
+}
+
+html[data-theme="dark"] .primary-nav a:hover,
+html[data-theme="dark"] .primary-nav a.active,
+html[data-theme="dark"] .nav-logout:hover {
+  color: #d9b574;
+}
+
+html[data-theme="dark"] .password-toggle {
+  color: #d7cec1;
+}
+
+html[data-theme="dark"] .auth-switch,
+html[data-theme="dark"] .auth-switch a,
+html[data-theme="dark"] .field-hint {
+  color: #d7cec1;
+}
+
+html[data-theme="dark"] .auth-switch a {
+  text-decoration-color: #d9b574;
+}
+
+html[data-theme="dark"] .auth-page input {
+  border-color: rgba(245, 240, 233, 0.42);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #c8beb1 !important;
+  opacity: 1 !important;
+}
+
+html[data-theme="dark"] .text-muted,
+html[data-theme="dark"] .muted {
+  color: #bcb5ac;
+}
+
+html[data-theme="dark"] .btn-quiet,
+html[data-theme="dark"] .btn-outline,
+html[data-theme="dark"] .action-secondary {
+  color: #eee9e2;
+}
+
+html[data-theme="dark"] .btn-outline,
+html[data-theme="dark"] .action-secondary {
+  border-color: rgba(238, 233, 226, 0.45);
+}
+
+html[data-theme="dark"] .btn-quiet:hover,
+html[data-theme="dark"] .btn-outline:hover,
+html[data-theme="dark"] .action-secondary:hover {
+  color: #d9b574;
+}
+
+html[data-theme="dark"] th {
+  background: #2d2925;
+  color: #d7cec1;
+}
+
+html[data-theme="dark"] .status-pending {
+  color: #d9b574;
+}
+
+html[data-theme="dark"] .status-approved {
+  color: #a7d3b4;
+}
+
+html[data-theme="dark"] .auth-submit {
+  border-color: #d9b574;
+  background: #d9b574;
+  color: #171514;
+}
+
+html[data-theme="dark"] button[type="submit"] {
+  border-color: #d9b574;
+  background: #d9b574;
+  color: #171514;
+}
+
+html[data-theme="dark"] button[type="submit"]:hover:not(:disabled) {
+  border-color: #ebc882;
+  background: #ebc882;
+}
+
+html[data-theme="dark"] .welcome,
+html[data-theme="dark"] .muted,
+html[data-theme="dark"] .page-intro,
+html[data-theme="dark"] .auth-intro,
+html[data-theme="dark"] .detail-description,
+html[data-theme="dark"] .product-description,
+html[data-theme="dark"] .product-specs dt {
+  color: #bcb5ac;
+}
+
+html[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  color: #f5f0e9;
+  border-color: rgba(238, 233, 226, 0.3);
+  background-color: #24201d;
+}
+
+html[data-theme="dark"] option {
+  background: #24201d;
+  color: #f5f0e9;
+}
+
+html[data-theme="dark"] .panel,
+html[data-theme="dark"] .review-form,
+html[data-theme="dark"] .piece-detail,
+html[data-theme="dark"] .product-photo,
+html[data-theme="dark"] .product-skeleton div,
+html[data-theme="dark"] .product-skeleton span {
+  background: #27221e;
+}
+
+html[data-theme="dark"] .collection-tools,
+html[data-theme="dark"] .admin-order,
+html[data-theme="dark"] .record-details,
+html[data-theme="dark"] .product-specs,
+html[data-theme="dark"] .product-specs div {
+  border-color: rgba(238, 233, 226, 0.18);
+}
+
+html[data-theme="dark"] .category-list button,
+html[data-theme="dark"] .back-link,
+html[data-theme="dark"] .record-details span {
+  color: #bcb5ac;
+}
+
+html[data-theme="dark"] .category-list button.selected,
+html[data-theme="dark"] .product h3,
+html[data-theme="dark"] .product-bottom,
+html[data-theme="dark"] .product-copy h1,
+html[data-theme="dark"] .detail-copy h2,
+html[data-theme="dark"] .section-heading {
+  color: #f5f0e9;
+}

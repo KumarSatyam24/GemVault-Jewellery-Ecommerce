@@ -1,0 +1,361 @@
+<div
+  class="announcement bg-charcoal px-4 py-2 text-center text-[10px] uppercase tracking-[0.22em] text-taupe"
+>
+  Considered pieces. Everyday heirlooms.
+</div>
+<header
+  class="site-header sticky top-0 z-40 border-b border-charcoal/10 bg-alabaster/95 backdrop-blur dark:border-white/20 dark:bg-[#1d1a18]"
+>
+  <div
+    class="shell header-inner !max-w-[1720px] flex min-h-[86px] items-center gap-3 max-[1023px]:min-h-[68px]"
+  >
+    <button
+      class="mobile-toggle hidden justify-self-start border-0 bg-transparent py-2 text-[11px] font-semibold uppercase tracking-widest text-ink max-[1023px]:block dark:text-alabaster"
+      type="button"
+      (click)="menuOpen = !menuOpen"
+      [attr.aria-expanded]="menuOpen"
+      aria-controls="main-navigation"
+    >
+      {{ menuOpen ? "Close" : "Menu" }}
+    </button>
+    <a
+      class="brand max-[1023px]:mx-auto whitespace-nowrap font-display text-[25px] tracking-[-0.05em] text-charcoal no-underline max-[1023px]:text-[23px] dark:text-alabaster"
+      [routerLink]="auth.isAdmin() ? '/admin/dashboard' : '/'"
+      (click)="menuOpen = false"
+      aria-label="GemVault home"
+    >
+      GEM<span>VAULT</span><span class="brand-mark">◇</span>
+    </a>
+    <nav
+      id="main-navigation"
+      class="primary-nav mx-auto flex items-center gap-4 xl:gap-6 2xl:gap-8 max-[1023px]:absolute max-[1023px]:left-0 max-[1023px]:right-0 max-[1023px]:top-full max-[1023px]:z-40 max-[1023px]:flex-col max-[1023px]:items-stretch max-[1023px]:gap-1 max-[1023px]:border-b max-[1023px]:border-charcoal/15 max-[1023px]:bg-alabaster max-[1023px]:px-6 max-[1023px]:py-5 max-[1023px]:shadow-lg dark:max-[1023px]:bg-[#1d1a18]"
+      [ngClass]="menuOpen ? 'max-[1023px]:flex' : 'max-[1023px]:hidden'"
+      aria-label="Main navigation"
+    >
+      <ng-container *ngIf="!auth.isAdmin()">
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+          (click)="menuOpen = false"
+          >Jewellery</a
+        >
+        <a
+          *ngIf="auth.isCustomer()"
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/orders"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >My orders</a
+        >
+        <a
+          *ngIf="auth.isCustomer()"
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/profile"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Account</a
+        >
+        <a
+          *ngIf="auth.isCustomer()"
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster"
+          routerLink="/wishlist"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Wishlist</a
+        >
+        <a
+          *ngIf="auth.isCustomer()"
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/feedback"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Reviews</a
+        >
+      </ng-container>
+      <ng-container *ngIf="auth.isAdmin()">
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster"
+          routerLink="/admin/dashboard"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Dashboard</a
+        >
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/admin/items"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Jewellery</a
+        >
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/admin/orders"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Orders</a
+        >
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/admin/restock"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Restock</a
+        >
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/buyers"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Buyers</a
+        >
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/feedback"
+          routerLinkActive="active"
+          (click)="menuOpen = false"
+          >Reviews</a
+        >
+      </ng-container>
+      <ng-container *ngIf="!auth.isAuthenticated()">
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/login"
+          routerLinkActive="active"
+          >Sign in</a
+        >
+        <a
+          class="border-b border-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink no-underline hover:border-gold hover:text-gold dark:text-alabaster dark:hover:text-[#d9b574]"
+          routerLink="/signup"
+          routerLinkActive="active"
+          >Create account</a
+        >
+      </ng-container>
+      <button
+        class="nav-logout border-0 bg-transparent py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-ink hover:text-gold dark:text-alabaster"
+        type="button"
+        *ngIf="auth.isAuthenticated()"
+        (click)="logout()"
+      >
+        Sign out
+      </button>
+    </nav>
+    <div
+      class="header-actions ml-8 flex shrink-0 items-center justify-end gap-5 max-[1023px]:ml-0 max-[1023px]:gap-3"
+    >
+      <div
+        class="live-rate relative max-[1220px]:hidden"
+        [ngClass]="auth.isAdmin() ? 'max-[1440px]:hidden' : ''"
+        *ngIf="auth.isAuthenticated() && !isAuthPage"
+      >
+        <button
+          class="rate-toggle flex items-center gap-2 rounded-lg border border-charcoal/10 bg-taupe/45 px-3 py-2 text-left transition-colors hover:border-gold hover:bg-taupe/80 dark:border-white/15 dark:bg-[#27221e]"
+          type="button"
+          (click)="ratePanelOpen = !ratePanelOpen"
+          [attr.aria-expanded]="ratePanelOpen"
+          aria-controls="live-rate-panel"
+        >
+          <span class="rate-dot" aria-hidden="true"></span>
+          <span
+            ><span
+              class="block text-[9px] font-semibold uppercase tracking-[0.14em] text-gold"
+              >Market rate</span
+            ><strong
+              class="flex items-center whitespace-nowrap text-xs text-charcoal dark:text-alabaster"
+              ><span>{{ selectedMetal }} · {{ selectedPurity }}</span
+              ><span
+                class="rate-price ml-3 border-l border-charcoal/15 pl-3 text-gold dark:border-white/20"
+                *ngIf="liveRate !== undefined"
+                >{{ liveRate | currency: "INR" }}/g</span
+              ></strong
+            ></span
+          >
+          <svg
+            class="h-3.5 w-3.5 text-gold"
+            viewBox="0 0 20 20"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.8"
+            aria-hidden="true"
+          >
+            <path d="m5 7 5 5 5-5" />
+          </svg>
+        </button>
+        <div
+          id="live-rate-panel"
+          class="rate-panel absolute right-0 top-[calc(100%+12px)] z-50 w-[290px] rounded-xl border border-charcoal/15 bg-alabaster p-4 shadow-xl dark:border-white/20 dark:bg-[#24201d]"
+          *ngIf="ratePanelOpen"
+        >
+          <div class="mb-4 flex items-center justify-between">
+            <p class="eyebrow !text-[9px]">Live metal price</p>
+            <button
+              class="border-0 bg-transparent p-0 text-xs text-muted hover:text-gold"
+              type="button"
+              (click)="refreshLiveRate(true)"
+            >
+              Refresh ↻
+            </button>
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <span
+                class="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-muted"
+                >Metal</span
+              ><app-dropdown
+                [(ngModel)]="selectedMetal"
+                (ngModelChange)="onMetalChange()"
+                [options]="metalOptions"
+                label="Metal"
+              ></app-dropdown>
+            </div>
+            <div>
+              <span
+                class="mb-1 block text-[10px] font-semibold uppercase tracking-widest text-muted"
+                >Purity</span
+              ><app-dropdown
+                [(ngModel)]="selectedPurity"
+                (ngModelChange)="refreshLiveRate()"
+                [options]="purityOptions"
+                label="Purity"
+              ></app-dropdown>
+            </div>
+          </div>
+          <p
+            class="mt-4 border-t border-charcoal/10 pt-3 text-lg font-semibold text-charcoal dark:border-white/20 dark:text-alabaster"
+            *ngIf="liveRate !== undefined"
+          >
+            {{ liveRate | currency: "INR" }}
+            <span class="text-xs font-normal text-muted">per gram</span>
+          </p>
+          <p class="mt-3 text-xs text-[#a33a31]" *ngIf="rateError">
+            {{ rateError }}
+          </p>
+        </div>
+      </div>
+      <button
+        class="bag-toggle inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-full border border-charcoal bg-charcoal px-4 text-[11px] font-semibold uppercase tracking-widest text-alabaster shadow-sm transition-colors hover:border-gold hover:bg-gold hover:text-charcoal max-[1023px]:px-2 dark:border-alabaster dark:bg-alabaster dark:text-charcoal dark:hover:border-gold dark:hover:bg-gold"
+        type="button"
+        *ngIf="auth.isCustomer() && !isAuthPage"
+        (click)="cartOpen = !cartOpen"
+        [attr.aria-expanded]="cartOpen"
+        [attr.aria-label]="'Cart, ' + cart.quantityCount + ' items'"
+        aria-controls="shopping-cart"
+      >
+        <svg
+          class="h-5 w-5 text-gold dark:text-charcoal"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.8"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <circle cx="9" cy="20" r="1" />
+          <circle cx="19" cy="20" r="1" />
+          <path d="M2 3h2l2.5 12h13l2-9H5" />
+        </svg>
+        <span class="max-[1023px]:sr-only">Cart</span>
+        <span
+          class="grid h-[22px] w-[22px] place-items-center rounded-full border border-gold bg-gold text-charcoal"
+          >{{ cart.quantityCount }}</span
+        >
+      </button>
+      <span
+        class="welcome whitespace-nowrap text-xs text-muted max-[1400px]:hidden"
+        *ngIf="auth.isAuthenticated()"
+        >{{ auth.getUsername() }}</span
+      >
+      <button
+        class="theme-toggle inline-flex items-center gap-2 border-0 bg-transparent text-[11px] font-semibold uppercase tracking-widest text-ink dark:text-alabaster"
+        type="button"
+        (click)="toggleTheme()"
+        [attr.aria-label]="darkMode ? 'Use light theme' : 'Use dark theme'"
+      >
+        <span aria-hidden="true">{{ darkMode ? "☀" : "◐" }}</span
+        ><span class="theme-label max-[1023px]:hidden">{{
+          darkMode ? "Light" : "Dark"
+        }}</span>
+      </button>
+    </div>
+  </div>
+</header>
+<main
+  class="shell main-content min-h-[calc(100vh-190px)] pb-24 pt-10 max-[720px]:pb-16 max-[720px]:pt-6"
+  [class.customer-layout]="auth.isCustomer()"
+  [class.auth-layout]="!auth.isAuthenticated()"
+>
+  <div class="page-content min-w-0"><router-outlet></router-outlet></div>
+  <app-cart-sidebar
+    *ngIf="auth.isCustomer()"
+    [mobileOpen]="cartOpen"
+    (closeRequested)="cartOpen = false"
+  ></app-cart-sidebar>
+</main>
+<app-confirm-dialog></app-confirm-dialog>
+<app-chatbot></app-chatbot>
+<footer
+  class="site-footer border-t border-white/15 bg-[#080807] text-[#f5f1eb]"
+>
+  <div
+    class="shell footer-top flex flex-col items-center gap-6 border-b border-white/15 py-10 text-center"
+  >
+    <div class="flex flex-wrap gap-3">
+      <a
+        routerLink="/"
+        class="inline-flex min-h-[44px] items-center rounded-full border border-white/40 px-5 text-[11px] font-semibold uppercase tracking-widest text-alabaster no-underline transition-colors hover:border-gold hover:bg-gold hover:text-charcoal"
+        >Explore pieces
+        <span class="ml-3 text-base leading-none">&rarr;</span></a
+      >
+      <a
+        *ngIf="auth.isCustomer()"
+        routerLink="/wishlist"
+        class="inline-flex min-h-[44px] items-center rounded-full border border-white/25 px-5 text-[11px] font-semibold uppercase tracking-widest text-alabaster no-underline transition-colors hover:border-gold hover:text-gold"
+        >My wishlist</a
+      >
+    </div>
+    <nav
+      class="flex flex-wrap justify-center gap-x-7 gap-y-3 text-[10px] font-semibold uppercase tracking-[0.16em]"
+      aria-label="Footer navigation"
+    >
+      <a
+        class="text-[#f5f1eb] no-underline transition-colors hover:text-gold"
+        routerLink="/"
+        >Collection</a
+      >
+      <a
+        *ngIf="auth.isCustomer()"
+        class="text-[#f5f1eb] no-underline transition-colors hover:text-gold"
+        routerLink="/wishlist"
+        >Wishlist</a
+      >
+      <a
+        *ngIf="auth.isCustomer()"
+        class="text-[#f5f1eb] no-underline transition-colors hover:text-gold"
+        routerLink="/orders"
+        >Orders</a
+      >
+      <a
+        *ngIf="auth.isCustomer()"
+        class="text-[#f5f1eb] no-underline transition-colors hover:text-gold"
+        routerLink="/profile"
+        >Account</a
+      >
+    </nav>
+    <span>© 2026 GemVault</span>
+  </div>
+  <div class="shell overflow-hidden py-[clamp(48px,6vw,88px)] text-center">
+    <p
+      class="m-0 whitespace-nowrap font-display text-[clamp(64px,9.2vw,148px)] leading-[0.82] tracking-[-0.065em] text-[#f5f1eb]"
+    >
+      GEMVAULT
+    </p>
+  </div>
+  <div
+    class="shell flex flex-col items-center gap-2 border-t border-white/15 py-7 text-center text-[10px] uppercase tracking-[0.16em] text-[#a69d93]"
+  >
+    <span>Considered pieces. Everyday heirlooms.</span>
+    <span>&copy; 2026 GemVault</span>
+  </div>
+</footer>

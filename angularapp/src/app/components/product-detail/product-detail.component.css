@@ -1,0 +1,19 @@
+.ring-preview {
+    overflow: hidden;
+    border-radius: 16px;
+    background: radial-gradient(ellipse, #fff, #eeeae4);
+  }
+  
+  .ring-preview model-viewer {
+    display: block;
+    width: 100%;
+    height: clamp(320px, 60vh, 600px);
+  }
+  
+  .ring-preview p {
+    margin: 0;
+    padding: 12px;
+    text-align: center;
+    color: #65584d;
+    font-size: 14px;
+  }
